@@ -47,7 +47,7 @@ const Login = () => {
 
             // kondisi role superUser
             const condition = ["Teknisi Laboratorium", "Kepala Laboratorium", "Kepala Prodi D3", "Kepala Prodi D4", "Kepala Departemen", "Asisten Direktur 2"];
-            if (result.data.length > 1) {
+            if (result.data.length > 1 || result.data[0].NAMA_ROLE === condition[0]) {
                 result.data.map((data) => {
                     let test = condition.some(el => JSON.stringify(data).includes(el));
                     if (test) {   // jika true, maka superuser

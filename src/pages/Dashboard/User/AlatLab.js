@@ -6,7 +6,7 @@ const AlatLab = (props) => {
     const [show, setShow] = useState({show: false, detailAlat: ""});
     const [dataAlat, setDataAlat] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    
     useEffect(() => {
         axios({
             method: 'post',
@@ -17,12 +17,13 @@ const AlatLab = (props) => {
             }
         }).then(result => {
             setDataAlat(result.data.data);
+            console.log(result);
             setLoading(false)
         }).catch(() => {
             setDataAlat(null);
             setLoading(false);
         })
-    }, [props.data.labID])
+    }, [])
 
     return (
         <div className='w-100 p-3'>
@@ -41,8 +42,8 @@ const AlatLab = (props) => {
                                     <Card.Img variant="top" src="holder.js/100px180" />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
-                                        <Card.Text>Tersedia : {data.JUMLAH}</Card.Text>
-                                        <Card.Text>No Seri : {data.NO_SERI}</Card.Text>
+                                        <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
+                                        <Card.Text>No Seri : {data.NOMOR_SERI}</Card.Text>
                                         <Button variant="primary" onClick={() => setShow({show:true, detailAlat: data})}>Detail</Button>
                                     </Card.Body>
                                 </Card>
@@ -70,7 +71,7 @@ const AlatLab = (props) => {
                             <Form.Label>Jumlah Tersedia</Form.Label>
                             <Form.Control
                                 type="jumlah"
-                                value={show.detailAlat.JUMLAH}
+                                value={show.detailAlat.JUMLAH_TERSEDIA}
                                 readOnly
                             />
                         </Form.Group>
@@ -86,7 +87,7 @@ const AlatLab = (props) => {
                             <Form.Label>No Seri</Form.Label>
                             <Form.Control
                                 type="seri"
-                                value={show.detailAlat.NO_SERI}
+                                value={show.detailAlat.NOMOR_SERI}
                                 readOnly
                             />
                         </Form.Group>

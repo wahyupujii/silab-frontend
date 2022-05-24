@@ -36,7 +36,7 @@ const SuperUser = ({dataUser}) => {
                         </span>
                     </li>
                     <List icon={InformasiAlatIcon} title="Alat Lab Tersedia" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
-                    <List icon={PengajuanAlatIcon} title="Alat Lab Diputihkan" path="/mis105/SILAB/dashboard/alat-diputihkan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/alat-diputihkan")} />
+                    <List icon={PengajuanAlatIcon} title="Semua Alat Lab" path="/mis105/SILAB/dashboard/alat-diputihkan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/alat-diputihkan")} />
                     <List icon={PengajuanAlatIcon} title="Pengajuan Alat" path="/mis105/SILAB/dashboard/pengajuan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pengajuan-alat")} />
 					<List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                     <List icon={PeminjamanAlatIcon} title="Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/perbaikan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/perbaikan-alat")} />
@@ -62,9 +62,9 @@ const SuperUser = ({dataUser}) => {
                     <div>
                         {
                             window.location.pathname === "/mis105/SILAB/dashboard" ? (
-                                <LabArea jurusan={dataUser.JURUSAN_NOMOR} />
+                                <LabArea dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/alat-diputihkan" ? (
-								<LabArea jurusan={dataUser.JURUSAN_NOMOR} />
+								<LabArea dataUser={dataUser} />
 							) : window.location.pathname === "/mis105/SILAB/dashboard/pengajuan-alat" ? (
                                 <PengajuanAlat dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/peminjaman-alat" ? (

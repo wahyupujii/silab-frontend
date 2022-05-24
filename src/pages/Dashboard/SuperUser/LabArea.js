@@ -6,16 +6,15 @@ import axios from 'axios'
 import AlatLabTersedia from "./AlatLabTersedia";
 import AlatLabDiputihkan from "./AlatLabDiputihkan";
 
-const LabArea = ({jurusan}) => {
+const LabArea = ({dataUser}) => {
     const [dataLab, setDataLab] = useState(null);
     const [loading, setLoading] = useState(true);
     const [alatLabArea, setAlatLabArea] = useState({show: false, labID: "", labTitle: ""});
-
     useEffect(() => {
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/laboratory.php?function=getLabByJurusan',
-            data: {jurusan: jurusan},
+            data: {jurusan: dataUser.JURUSAN_NOMOR},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
@@ -24,7 +23,7 @@ const LabArea = ({jurusan}) => {
             localStorage.setItem("labByJurusan", JSON.stringify(result.data.data));
             setLoading(false);
         }).catch()
-    }, [jurusan])
+    }, [])
 
     return (
         <>
@@ -56,9 +55,9 @@ const LabArea = ({jurusan}) => {
                         </div>
                     </div>
                 ) : window.location.pathname === "/mis105/SILAB/dashboard" ? (
-                    <AlatLabTersedia handleBack={() => setAlatLabArea({...alatLabArea, show: false,})} data={{labID: alatLabArea.labID, labTitle: alatLabArea.labTitle}} />
+                    <AlatLabTersedia handleBack={() => setAlatLabArea({...alatLabArea, show: false,})} data={{labID: alatLabArea.labID, labTitle: alatLabArea.labTitle}} dataUser={dataUser} />
                 ) : window.location.pathname === "/mis105/SILAB/dashboard/alat-diputihkan" ? (
-                    <AlatLabDiputihkan handleBack={() => setAlatLabArea({...alatLabArea, show: false})} data={{labID: alatLabArea.labID, labTitle: alatLabArea.labTitle}} />
+                    <AlatLabDiputihkan handleBack={() => setAlatLabArea({...alatLabArea, show: false})} data={{labID: alatLabArea.labID, labTitle: alatLabArea.labTitle}} dataUser={dataUser} />
                 ) : (<div></div>)
             }
             

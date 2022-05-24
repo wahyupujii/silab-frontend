@@ -1,37 +1,121 @@
 import React, {useState, useEffect} from 'react'
 import {Breadcrumb, Card, Button, Modal, Form} from "react-bootstrap"
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 const AlatLabTersedia = (props) => {
     const [modal, setModal] = useState({show: false, detailAlat: ""});
     const [dataAlat, setDataAlat] = useState(null);
     const [loading, setLoading] = useState(null);
     const [modalTambahAlat, setModalTambah] = useState(false)
+    const [dataCount, setDataCount] = useState(0);
     
     const [inputs, setInputs] = useState({})
-    
-    console.log(props)
 
     const tambahAlatLab = () => {
+        // let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
+
         // axios({
         //     method: 'post',
         //     url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=addAlatLab',
         //     data: {
         //         ...inputs,
         //         jumlah: parseInt(inputs.jumlah),
-        //         status_alat: "TERSEDIA",
-        //         labID: props.data.labID,
-        //         perbaikanID: NULL,
-        //         statusPerbaikan: "Tidak Diperbaiki",
-        //         teknisiKelolaNomor: 
+        //         labID: parseInt(props.data.labID), 
+        //         teknisiKelolaNomor: parseInt(props.dataUser.NOMOR),
+        //         dateKelola: today,
         //     },
         //     headers: {
         //         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
         //     }
-        // }).then(result => {
-        //     setLabArea(result.data.data);
-        //     setLoading(false)
-        // }).catch()
+        // }).then(() => {
+        //     setModalTambah(false);
+        //     setDataCount(dataCount+1);
+        // }).catch(() => {
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: "Gagal menambahkan data alat lab",
+        //         text: 'Terdapat kesalahan inputan / anda bukan teknisi dari lab ini'
+        //     })
+        // })
+
+        console.log(inputs);
+        const formData = new FormData();
+        formData.append(
+            "myfile",
+            ...inputs,
+            ...inputs.gambar.name
+        )
+
+        console.log(formData);
+    }
+
+    const hapusAlatLab = (id) => {
+        Swal.fire({
+            icon: 'question',
+            title: 'Anda yakin ingin MENGHAPUS ALAT ini ? ',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then((response) => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=deleteAlatLab',
+                    data: {alatLabID: id, teknisiKelolaNomor: parseInt(props.dataUser.NOMOR), labID: parseInt(props.data.labID)},
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    setDataCount(dataCount-1);
+                    setModal({...modal, show: false});
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil Menghapus Alat Lab',
+                    })
+                }).catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: "Gagal menghapus data alat lab",
+                        text: 'Terdapat kesalahan / anda bukan teknisi dari lab ini'
+                    })
+                })
+            }
+        }).catch();
+    }
+    
+    const putihkanAlat = (id) => {
+        Swal.fire({
+            icon: 'question',
+            title: 'Anda yakin ingin MEMUTIHKAN ALAT ini ? ',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=putihkanAlat',
+                    data: {alatLabID: id, teknisiKelolaNomor: parseInt(props.dataUser.NOMOR), labID: parseInt(props.data.labID)},
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then((result) => {
+                    console.log(result);
+                    setDataCount(dataCount-1);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil Memutihkan Alat Lab',
+                    })
+                }).catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: "Gagal memutihkan alat lab",
+                        text: 'Terdapat kesalahan / anda bukan teknisi dari lab ini'
+                    })
+                })
+            }
+        })
     }
 
     useEffect(() => {
@@ -44,12 +128,13 @@ const AlatLabTersedia = (props) => {
             }
         }).then(result => {
             setDataAlat(result.data.data);
+            setDataCount(result.data.data.length);
             setLoading(false)
         }).catch(() => {
             setDataAlat(null);
             setLoading(false);
         })
-    }, [])
+    }, [dataCount])
     return (
         <div className='w-100 p-3'>
             <Breadcrumb>
@@ -59,7 +144,10 @@ const AlatLabTersedia = (props) => {
             </Breadcrumb>
             <div className='d-flex justify-content-between align-items-center'>
                 <h2>Alat Lab</h2>
-                <Button className="primary" onClick={() => setModalTambah(true)} >Tambah Alat</Button>
+                { 
+                    props.dataUser.NAMA_ROLE !== 'Teknisi Laboratorium' ? <div></div> : 
+                    <Button className="primary" onClick={() => setModalTambah(true)} >Tambah Alat</Button>
+                }
             </div>
             <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
                 {
@@ -67,13 +155,16 @@ const AlatLabTersedia = (props) => {
                         dataAlat.map(data => {
                             return (
                                 <Card style={{ width: '15rem' }} className="my-2" key={data.ID}>
-                                    <Card.Img variant="top" src="holder.js/100px180" />
+                                    <Card.Img variant="top" src={data.GAMBAR} />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
-                                        <Card.Text>Tersedia : {data.JUMLAH}</Card.Text>
-                                        <Card.Text>No Seri : {data.NO_SERI}</Card.Text>
+                                        <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
+                                        <Card.Text>No Seri : {data.NOMOR_SERI}</Card.Text>
                                         <div className="w-100 d-flex justify-content-between" >
-                                            <Button variant="outline-primary">Putihkan</Button>
+                                            {
+                                                props.dataUser.NAMA_ROLE !== 'Teknisi Laboratorium' ? <div></div> : 
+                                                <Button variant="outline-primary" onClick={() => putihkanAlat(data.ID)}>Putihkan</Button>
+                                            }
                                             <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>                                            
                                         </div>
                                     </Card.Body>
@@ -84,6 +175,7 @@ const AlatLabTersedia = (props) => {
                 }
             </div>
 
+            {/* modal detail alat */}
             <Modal show={modal.show} onHide={() => setModal({...modal, show: false})}>
                 <Modal.Header closeButton>
                     <Modal.Title>Detail Alat</Modal.Title>
@@ -99,10 +191,18 @@ const AlatLabTersedia = (props) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
+                            <Form.Label>Jumlah Total</Form.Label>
+                            <Form.Control
+                                type="jumlah_total"
+                                value={modal.detailAlat.JUMLAH_TOTAL}
+                                readOnly
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
                             <Form.Label>Jumlah Tersedia</Form.Label>
                             <Form.Control
-                                type="jumlah"
-                                value={modal.detailAlat.JUMLAH}
+                                type="jumlah_tersedia"
+                                value={modal.detailAlat.JUMLAH_TERSEDIA}
                                 readOnly
                             />
                         </Form.Group>
@@ -118,7 +218,7 @@ const AlatLabTersedia = (props) => {
                             <Form.Label>No Seri</Form.Label>
                             <Form.Control
                                 type="seri"
-                                value={modal.detailAlat.NO_SERI}
+                                value={modal.detailAlat.NOMOR_SERI}
                                 readOnly
                             />
                         </Form.Group>
@@ -128,12 +228,13 @@ const AlatLabTersedia = (props) => {
                     <Button variant="secondary">
                         Edit Data
                     </Button>
-                    <Button variant="danger">
+                    <Button variant="danger" onClick={() => hapusAlatLab(modal.detailAlat.ID)} >
                         Hapus
                     </Button>
                 </Modal.Footer>
             </Modal>
 
+            {/* modal tambah alat */}
             <Modal show={modalTambahAlat} onHide={() => setModalTambah(false) }>
                 <Modal.Header closeButton>
                     <Modal.Title>Tambah Alat Lab Baru</Modal.Title>
@@ -150,11 +251,11 @@ const AlatLabTersedia = (props) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Jumlah Tersedia</Form.Label>
+                            <Form.Label>Jumlah Total</Form.Label>
                             <Form.Control
                                 name="jumlah"
                                 type="text"
-                                placeholder='Jumlah Tersedia'
+                                placeholder='Jumlah Total'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                             />
                         </Form.Group>
@@ -176,10 +277,14 @@ const AlatLabTersedia = (props) => {
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                             />
                         </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Upload Gambar</Form.Label>
+                            <Form.Control type="file" name="gambar" onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.files[0]})} />
+                        </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="success" onClick={() => console.log(inputs)}>
+                    <Button variant="success" onClick={tambahAlatLab} >
                         Simpan
                     </Button>
                 </Modal.Footer>
