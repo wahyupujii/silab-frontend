@@ -13,41 +13,36 @@ const AlatLabTersedia = (props) => {
     const [inputs, setInputs] = useState({})
 
     const tambahAlatLab = () => {
-        // let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
+        let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
 
-        // axios({
-        //     method: 'post',
-        //     url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=addAlatLab',
-        //     data: {
-        //         ...inputs,
-        //         jumlah: parseInt(inputs.jumlah),
-        //         labID: parseInt(props.data.labID), 
-        //         teknisiKelolaNomor: parseInt(props.dataUser.NOMOR),
-        //         dateKelola: today,
-        //     },
-        //     headers: {
-        //         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-        //     }
-        // }).then(() => {
-        //     setModalTambah(false);
-        //     setDataCount(dataCount+1);
-        // }).catch(() => {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: "Gagal menambahkan data alat lab",
-        //         text: 'Terdapat kesalahan inputan / anda bukan teknisi dari lab ini'
-        //     })
-        // })
+        let formDataAlat = new FormData();
+        formDataAlat.append('NAMA', inputs.nama);
+        formDataAlat.append('JUMLAH', inputs.jumlah);
+        formDataAlat.append('TAHUN', inputs.tahun);
+        formDataAlat.append('NOMOR_SERI', inputs.no_seri);
+        formDataAlat.append('GAMBAR', inputs.gambar);
+        formDataAlat.append('TEKNISINOMOR', parseInt(props.dataUser.NOMOR));
+        formDataAlat.append('DATEKELOLA', today)
+        formDataAlat.append('LABID', parseInt(props.data.labID));
 
-        console.log(inputs);
-        const formData = new FormData();
-        formData.append(
-            "myfile",
-            ...inputs,
-            ...inputs.gambar.name
-        )
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=addAlatLab',
+            data: formDataAlat,
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then((result) => {
+            setModalTambah(false);
+            setDataCount(dataCount+1);
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: "Gagal menambahkan data alat lab",
+                text: 'Terdapat kesalahan inputan / anda bukan teknisi dari lab ini'
+            })
+        })        
 
-        console.log(formData);
     }
 
     const hapusAlatLab = (id) => {
@@ -155,7 +150,7 @@ const AlatLabTersedia = (props) => {
                         dataAlat.map(data => {
                             return (
                                 <Card style={{ width: '15rem' }} className="my-2" key={data.ID}>
-                                    <Card.Img variant="top" src={data.GAMBAR} />
+                                    <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
                                         <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
