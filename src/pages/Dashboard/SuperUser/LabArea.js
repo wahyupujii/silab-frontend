@@ -35,7 +35,7 @@ const LabArea = ({dataUser}) => {
                             <Breadcrumb.Item>Pilih Area Lab</Breadcrumb.Item>
                         </Breadcrumb>
                         <h2>Pilih Area Lab</h2>
-                        <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
+                        <div className={`d-flex flex-wrap ${LabArea.length > 4 ? 'justify-content-between' : 'justify-content-evenly'} px-4 py-3`} style={{maxWidth: '100%', background: 'white'}}>
                             {
                                 dataLab.map(data => {
                                     return (

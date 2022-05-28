@@ -75,7 +75,7 @@ const AlatLabDiputihkan = (props) => {
                         dataAlat.map(data => {
                             return (
                                 <Card style={{ width: '13rem' }} className="my-2" key={data.ID}>
-                                    <Card.Img variant="top" src={data.GAMBAR} />
+                                    <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
                                         <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form, Table} from "react-bootstrap"
+import {Breadcrumb, Card, Button, Modal, Form, Table, Dropdown, DropdownButton} from "react-bootstrap"
 import DetailPeminjaman from './DetailPeminjaman'
 import axios from "axios"
 // import Swal from "sweetalert2";
@@ -13,6 +13,7 @@ const PeminjamanAlat = ({nomorPegawai}) => {
     const [dataPeminjaman, setDataPeminjaman] = useState(null);
     // const [dataCount, setDataCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [inputs, setInputs] = useState({});
 
     useEffect(() => {
         axios({
@@ -31,6 +32,29 @@ const PeminjamanAlat = ({nomorPegawai}) => {
             setLoading(false);
         })
     }, [nomorPegawai]);
+
+    const buatPeminjaman = () => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=buatPeminjaman',
+            data: {
+                ...inputs,
+                pegawai_nomor: parseInt(nomorPegawai)
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            // setDataPeminjaman(result.data.data);
+            // // setDataCount(result.data.data.length);
+            // setLoading(false);
+            console.log(result);
+        }).catch((err) => {
+            // setDataPeminjaman(null);
+            // setLoading(false);
+            console.error("err", err)
+        })
+    }
 
     return (
         <>
@@ -78,35 +102,96 @@ const PeminjamanAlat = ({nomorPegawai}) => {
                         </div>
 
                         {/* modal tambah pinjam alat */}
-                        <Modal show={showPinjam} onHide={() => setShowPinjam(false)}>
+                        <Modal show={showPinjam} onHide={() => setShowPinjam(false)} size='lg' scrollable>
                             <Modal.Header closeButton>
                                 <Modal.Title>Form Peminjaman Alat</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                                <Form>
+                                <Form className="d-flex justify-content-between">
                                     <Form.Group className="mb-3">
                                         <Form.Label>Nama Peminjaman</Form.Label>
                                         <Form.Control
                                             type="name"
+                                            name='nama'
                                             placeholder='nama peminjaman'
+                                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Tanggal Pinjam</Form.Label>
                                         <Form.Control
+                                            name='tanggal_pinjam'
                                             type="date"
+                                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                                         />
                                     </Form.Group>
                                     <Form.Group className="mb-3">
                                         <Form.Label>Tanggal Kembali</Form.Label>
                                         <Form.Control
+                                            name='tanggal_kembali'
                                             type="date"
+                                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                                         />
                                     </Form.Group>
                                 </Form>
+                                <Form.Group>
+                                    <Form.Label>Pilih Lab Area</Form.Label>
+                                    <DropdownButton id="dropdown-basic-button" variant="outline-secondary" title="Pilih Lab Area">
+                                        <Dropdown.Item>Lab Sistem Informasi - C102</Dropdown.Item>
+                                    </DropdownButton>
+                                </Form.Group>
+
+                                <div className="d-flex justify-content-between">
+                                    {/* <span className="text-secondary">Pilih area lab terlebih dahulu</span> */}
+                                    <Card style={{ width: '13rem' }} className="my-2">
+                                        <Card.Img variant="top" src="holder.js/100px180" />
+                                        <Card.Body>
+                                            <Card.Title>Card Title</Card.Title>
+                                            <Card.Text>Tersedia : 10</Card.Text>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <div className='w-100 d-flex justify-content-between'>
+                                                    <button className="px-2">-</button>
+                                                    <span>0</span>
+                                                    <button className="px-2">+</button>
+                                                </div>
+                                                <Button variant="success" style={{marginLeft: '10px'}} disabled>Tambah</Button>
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                    <Card style={{ width: '13rem' }} className="my-2">
+                                        <Card.Img variant="top" src="holder.js/100px180" />
+                                        <Card.Body>
+                                            <Card.Title>Card Title</Card.Title>
+                                            <Card.Text>Tersedia : 10</Card.Text>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <div className='w-100 d-flex justify-content-between'>
+                                                    <button className="px-2">-</button>
+                                                    <span>0</span>
+                                                    <button className="px-2">+</button>
+                                                </div>
+                                                <Button variant="success" style={{marginLeft: '10px'}} disabled>Tambah</Button>
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                    <Card style={{ width: '13rem' }} className="my-2">
+                                        <Card.Img variant="top" src="holder.js/100px180" />
+                                        <Card.Body>
+                                            <Card.Title>Card Title</Card.Title>
+                                            <Card.Text>Tersedia : 10</Card.Text>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <div className='w-100 d-flex justify-content-between'>
+                                                    <button className="px-2">-</button>
+                                                    <span>0</span>
+                                                    <button className="px-2">+</button>
+                                                </div>
+                                                <Button variant="success" style={{marginLeft: '10px'}} disabled>Tambah</Button>
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                </div>
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button variant="primary">
+                                <Button variant="primary" onClick={buatPeminjaman}>
                                     Buat Peminjaman
                                 </Button>
                             </Modal.Footer>

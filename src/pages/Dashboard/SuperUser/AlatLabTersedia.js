@@ -12,7 +12,8 @@ const AlatLabTersedia = (props) => {
     
     const [inputs, setInputs] = useState({})
 
-    const tambahAlatLab = () => {
+    const tambahAlatLab = (e) => {
+        e.preventDefault();
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
 
         let formDataAlat = new FormData();
@@ -42,7 +43,6 @@ const AlatLabTersedia = (props) => {
                 text: 'Terdapat kesalahan inputan / anda bukan teknisi dari lab ini'
             })
         })        
-
     }
 
     const hapusAlatLab = (id) => {
@@ -130,6 +130,7 @@ const AlatLabTersedia = (props) => {
             setLoading(false);
         })
     }, [dataCount])
+
     return (
         <div className='w-100 p-3'>
             <Breadcrumb>
@@ -144,7 +145,7 @@ const AlatLabTersedia = (props) => {
                     <Button className="primary" onClick={() => setModalTambah(true)} >Tambah Alat</Button>
                 }
             </div>
-            <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
+            <div className={`d-flex flex-wrap ${dataCount > 4 && dataCount !== 0 ? 'justify-content-between' : 'justify-content-evenly'} px-4 py-3`} style={{maxWidth: '100%', background: 'white'}}>
                 {
                     loading ? (<span>loading ... </span>) : dataAlat === null ? (<span>Belum ada alat di lab ini</span>) : (
                         dataAlat.map(data => {
@@ -220,6 +221,9 @@ const AlatLabTersedia = (props) => {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
+                    {/* <Button variant="secondary">
+                        Edit Data
+                    </Button> */}
                     <Button variant="secondary">
                         Edit Data
                     </Button>
@@ -231,11 +235,11 @@ const AlatLabTersedia = (props) => {
 
             {/* modal tambah alat */}
             <Modal show={modalTambahAlat} onHide={() => setModalTambah(false) }>
-                <Modal.Header closeButton>
-                    <Modal.Title>Tambah Alat Lab Baru</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
+                <Form onSubmit={tambahAlatLab} encType="multipart/form-data" >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Tambah Alat Lab Baru</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
                         <Form.Group className="mb-3">
                             <Form.Label>Nama Alat</Form.Label>
                             <Form.Control
@@ -243,6 +247,7 @@ const AlatLabTersedia = (props) => {
                                 type="text"
                                 placeholder='Nama Alat'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required={true}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -252,6 +257,7 @@ const AlatLabTersedia = (props) => {
                                 type="text"
                                 placeholder='Jumlah Total'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required={true}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -261,6 +267,7 @@ const AlatLabTersedia = (props) => {
                                 type="text"
                                 placeholder='Tahun'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required={true}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -270,19 +277,25 @@ const AlatLabTersedia = (props) => {
                                 type="text"
                                 placeholder='No Seri'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required={true}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Upload Gambar</Form.Label>
-                            <Form.Control type="file" name="gambar" onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.files[0]})} />
+                            <Form.Control 
+                                type="file" 
+                                name="gambar" 
+                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.files[0]})} 
+                                required={true}
+                            />
                         </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="success" onClick={tambahAlatLab} >
-                        Simpan
-                    </Button>
-                </Modal.Footer>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="success" type="submit">
+                            Simpan
+                        </Button>
+                    </Modal.Footer>
+                </Form>
             </Modal>
         </div>
     )
