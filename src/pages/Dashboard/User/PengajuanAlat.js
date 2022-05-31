@@ -1,8 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form} from "react-bootstrap";
+import {Breadcrumb, Card, Button} from "react-bootstrap";
 import axios from "axios";
 
 import DetailPengajuan from './DetailPengajuan';
+
+// component
+import { BuatPengajuan } from '../../../components/Modal';
 
 const PengajuanAlat = ({pegawaiNomor}) => {
     const [show, setShow] = useState(false);
@@ -10,9 +13,6 @@ const PengajuanAlat = ({pegawaiNomor}) => {
     const [dataPengajuan, setDataPengajuan] = useState(null);
     const [loading, setLoading] = useState(true);
     const [dataCount, setDataCount] = useState(0);
-    const [inputs, setInputs] = useState({});
-
-    const dataLab = JSON.parse(localStorage.getItem("labByJurusan"));
 
     useEffect(() => {
         axios({
@@ -31,30 +31,6 @@ const PengajuanAlat = ({pegawaiNomor}) => {
             setLoading(false)
         })
     }, [dataCount, pegawaiNomor])
-
-    const buatPengajuan = () => {
-        if (inputs.laboratorium_id !== "Pilih Lab Tujuan") {
-            axios({
-                method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=buatPengajuan',
-                data: {
-                    ...inputs,
-                    status: "Menunggu ACC KaLab",
-                    pegawai_nomor: pegawaiNomor,
-                },
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-                }
-            })
-            .then(result => {
-                if (result.data.status) {
-                    setShow(false);
-                    setDataCount(dataCount+1);
-                }
-            })
-            .catch(err => console.log("err", err))
-        } 
-    }
 
     return (
         <>
@@ -90,48 +66,14 @@ const PengajuanAlat = ({pegawaiNomor}) => {
                             }
                         </div>
         
-                        <Modal show={show} onHide={() => setShow(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Form Pengajuan Alat</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Nama Pengajuan</Form.Label>
-                                        <Form.Control
-                                            type="name"
-                                            placeholder='nama pengajuan'
-                                            onChange={(e) => setInputs({...inputs, nama: e.target.value})}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tanggal</Form.Label>
-                                        <Form.Control
-                                            type="date"
-                                            onChange={(e) => setInputs({...inputs, tanggal_pengajuan: e.target.value})}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label>Pilih Lab Tujuan</Form.Label>
-                                        <Form.Select aria-label="lab tujuan" onChange={(e) => setInputs({ ...inputs, laboratorium_id: e.target.value})}>
-                                            <option>Pilih Lab Tujuan</option>
-                                            {
-                                                dataLab.map(lab => {
-                                                    return (
-                                                        <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
-                                                    )
-                                                })
-                                            }
-                                        </Form.Select>
-                                    </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="primary" onClick={buatPengajuan}>
-                                    Buat Pengajuan
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+
+                        {/* modal buat pengajuan */}
+                        <BuatPengajuan 
+                            show={show}
+                            onHide={() => setShow(false)}
+                            data={{pegawaiNomor}}
+                            count={() => setDataCount(dataCount+1)}
+                        />
                     </div>
                 ) : (
                     <DetailPengajuan handleBack={(value) => setDetailPengajuan({...detailPengajuan, show: false})} data={{dataID: detailPengajuan.dataID, dataTitle: detailPengajuan.dataTitle}} />

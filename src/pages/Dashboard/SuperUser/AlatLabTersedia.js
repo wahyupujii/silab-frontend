@@ -1,83 +1,16 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form} from "react-bootstrap"
+import {Breadcrumb, Card, Button} from "react-bootstrap"
 import axios from "axios";
 import Swal from 'sweetalert2';
+import { DetailAlatLab, EditAlatLab, TambahAlatLab } from '../../../components/Modal';
 
 const AlatLabTersedia = (props) => {
-    const [modal, setModal] = useState({show: false, detailAlat: ""});
+    const [modalDetail, setModalDetail] = useState({show: false, detailAlat: ""});
+    const [modalTambahAlat, setModalTambah] = useState(false)
+    const [modalEdit, setModalEdit] = useState(false)
     const [dataAlat, setDataAlat] = useState(null);
     const [loading, setLoading] = useState(null);
-    const [modalTambahAlat, setModalTambah] = useState(false)
     const [dataCount, setDataCount] = useState(0);
-    
-    const [inputs, setInputs] = useState({})
-
-    const tambahAlatLab = (e) => {
-        e.preventDefault();
-        let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
-
-        let formDataAlat = new FormData();
-        formDataAlat.append('NAMA', inputs.nama);
-        formDataAlat.append('JUMLAH', inputs.jumlah);
-        formDataAlat.append('TAHUN', inputs.tahun);
-        formDataAlat.append('NOMOR_SERI', inputs.no_seri);
-        formDataAlat.append('GAMBAR', inputs.gambar);
-        formDataAlat.append('TEKNISINOMOR', parseInt(props.dataUser.NOMOR));
-        formDataAlat.append('DATEKELOLA', today)
-        formDataAlat.append('LABID', parseInt(props.data.labID));
-
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=addAlatLab',
-            data: formDataAlat,
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-            }
-        }).then((result) => {
-            setModalTambah(false);
-            setDataCount(dataCount+1);
-        }).catch(() => {
-            Swal.fire({
-                icon: 'error',
-                title: "Gagal menambahkan data alat lab",
-                text: 'Terdapat kesalahan inputan / anda bukan teknisi dari lab ini'
-            })
-        })        
-    }
-
-    const hapusAlatLab = (id) => {
-        Swal.fire({
-            icon: 'question',
-            title: 'Anda yakin ingin MENGHAPUS ALAT ini ? ',
-            showDenyButton: true,
-            confirmButtonText: 'Ya saya yakin',
-            denyButtonText: 'Tidak jadi'
-        }).then((response) => {
-            if (response.isConfirmed) {
-                axios({
-                    method: 'post',
-                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=deleteAlatLab',
-                    data: {alatLabID: id, teknisiKelolaNomor: parseInt(props.dataUser.NOMOR), labID: parseInt(props.data.labID)},
-                    headers: {
-                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-                    }
-                }).then(() => {
-                    setDataCount(dataCount-1);
-                    setModal({...modal, show: false});
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil Menghapus Alat Lab',
-                    })
-                }).catch(() => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: "Gagal menghapus data alat lab",
-                        text: 'Terdapat kesalahan / anda bukan teknisi dari lab ini'
-                    })
-                })
-            }
-        }).catch();
-    }
     
     const putihkanAlat = (id) => {
         Swal.fire({
@@ -129,7 +62,7 @@ const AlatLabTersedia = (props) => {
             setDataAlat(null);
             setLoading(false);
         })
-    }, [dataCount])
+    }, [dataCount, props.data.labID])
 
     return (
         <div className='w-100 p-3'>
@@ -161,7 +94,7 @@ const AlatLabTersedia = (props) => {
                                                 props.dataUser.NAMA_ROLE !== 'Teknisi Laboratorium' ? <div></div> : 
                                                 <Button variant="outline-primary" onClick={() => putihkanAlat(data.ID)}>Putihkan</Button>
                                             }
-                                            <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>                                            
+                                            <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>                                            
                                         </div>
                                     </Card.Body>
                                 </Card>
@@ -172,131 +105,29 @@ const AlatLabTersedia = (props) => {
             </div>
 
             {/* modal detail alat */}
-            <Modal show={modal.show} onHide={() => setModal({...modal, show: false})}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Detail Alat</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nama Alat</Form.Label>
-                            <Form.Control
-                                type="name"
-                                value={modal.detailAlat.NAMA}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Jumlah Total</Form.Label>
-                            <Form.Control
-                                type="jumlah_total"
-                                value={modal.detailAlat.JUMLAH_TOTAL}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Jumlah Tersedia</Form.Label>
-                            <Form.Control
-                                type="jumlah_tersedia"
-                                value={modal.detailAlat.JUMLAH_TERSEDIA}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Tahun</Form.Label>
-                            <Form.Control
-                                type="tahun"
-                                value={modal.detailAlat.TAHUN}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>No Seri</Form.Label>
-                            <Form.Control
-                                type="seri"
-                                value={modal.detailAlat.NOMOR_SERI}
-                                readOnly
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    {/* <Button variant="secondary">
-                        Edit Data
-                    </Button> */}
-                    <Button variant="secondary">
-                        Edit Data
-                    </Button>
-                    <Button variant="danger" onClick={() => hapusAlatLab(modal.detailAlat.ID)} >
-                        Hapus
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <DetailAlatLab 
+                type="primary"
+                show={modalDetail.show} 
+                onHide={() => setModalDetail({...modalDetail, show: false})} 
+                data={{dataAlat: modalDetail.detailAlat, dataUser: props.dataUser, labID: props.data.labID}} 
+                count={() => setDataCount(dataCount-1)}
+                editAlatLab={() => setModalEdit(true)}
+            />
 
             {/* modal tambah alat */}
-            <Modal show={modalTambahAlat} onHide={() => setModalTambah(false) }>
-                <Form onSubmit={tambahAlatLab} encType="multipart/form-data" >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Tambah Alat Lab Baru</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nama Alat</Form.Label>
-                            <Form.Control
-                                name="nama"
-                                type="text"
-                                placeholder='Nama Alat'
-                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                required={true}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Jumlah Total</Form.Label>
-                            <Form.Control
-                                name="jumlah"
-                                type="text"
-                                placeholder='Jumlah Total'
-                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                required={true}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Tahun</Form.Label>
-                            <Form.Control
-                                name="tahun"
-                                type="text"
-                                placeholder='Tahun'
-                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                required={true}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>No Seri</Form.Label>
-                            <Form.Control
-                                name="no_seri"
-                                type="text"
-                                placeholder='No Seri'
-                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                required={true}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Upload Gambar</Form.Label>
-                            <Form.Control 
-                                type="file" 
-                                name="gambar" 
-                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.files[0]})} 
-                                required={true}
-                            />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="success" type="submit">
-                            Simpan
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
+            <TambahAlatLab 
+                show={modalTambahAlat} 
+                onHide={() => setModalTambah(false)} 
+                data={{dataUser: props.dataUser, dataLab: props.data.labID}} 
+                count={() => setDataCount(dataCount+1)} 
+            />
+
+            {/* modal edit alat */}
+            <EditAlatLab 
+                show={modalEdit}
+                onHide={() => setModalEdit(false)}
+                data={{dataUser: props.dataUser.NOMOR, dataLab: props.data.labID, dataAlat: modalDetail.detailAlat}}
+            />
         </div>
     )
 }

@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form} from "react-bootstrap";
+import {Breadcrumb, Card, Button} from "react-bootstrap";
 import axios from 'axios';
+
+// component
+import { DetailAlatLab } from '../../../components/Modal';
 
 const AlatLab = (props) => {
     const [show, setShow] = useState({show: false, detailAlat: ""});
@@ -17,13 +20,12 @@ const AlatLab = (props) => {
             }
         }).then(result => {
             setDataAlat(result.data.data);
-            console.log(result);
             setLoading(false)
         }).catch(() => {
             setDataAlat(null);
             setLoading(false);
         })
-    }, [])
+    }, [props.data.labID])
 
     return (
         <div className='w-100 p-3'>
@@ -39,7 +41,7 @@ const AlatLab = (props) => {
                         dataAlat.map(data => {
                             return (
                                 <Card style={{ width: '13rem' }} className="my-2" key={data.ID}>
-                                    <Card.Img variant="top" src="holder.js/100px180" />
+                                    <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
                                         <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
@@ -53,52 +55,13 @@ const AlatLab = (props) => {
                 }
             </div>
 
-            <Modal show={show.show} onHide={() => setShow({...show, show: false})}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Detail Alat</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nama Alat</Form.Label>
-                            <Form.Control
-                                type="name"
-                                value={show.detailAlat.NAMA}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Jumlah Tersedia</Form.Label>
-                            <Form.Control
-                                type="jumlah"
-                                value={show.detailAlat.JUMLAH_TERSEDIA}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Tahun</Form.Label>
-                            <Form.Control
-                                type="tahun"
-                                value={show.detailAlat.TAHUN}
-                                readOnly
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>No Seri</Form.Label>
-                            <Form.Control
-                                type="seri"
-                                value={show.detailAlat.NOMOR_SERI}
-                                readOnly
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow({...show, show: false})}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            {/* modal detail alat yang diputihkan */}
+            <DetailAlatLab 
+                type="tertiary"
+                show={show.show}
+                onHide={() => setShow({...show, show: false})}
+                data={{dataAlat: show.detailAlat}} 
+            />
         </div>
     )
 }

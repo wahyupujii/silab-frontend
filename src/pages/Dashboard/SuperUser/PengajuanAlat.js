@@ -1,11 +1,15 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form} from "react-bootstrap";
+import {Breadcrumb, Card, Button} from "react-bootstrap";
 import axios from "axios";
 
 import DetailPengajuan from './DetailPengajuan';
 import PersetujuanPengajuan from './PersetujuanPengajuan';
 
+// component
+import {BuatPengajuan} from "../../../components/";
+
 const PengajuanAlat = ({dataUser}) => {    
+    
     const [content, setContent] = useState("");
 
     return (
@@ -16,16 +20,26 @@ const PengajuanAlat = ({dataUser}) => {
                     <Breadcrumb.Item>Pengajuan Alat Lab</Breadcrumb.Item>
                 </Breadcrumb>
                 <div className="d-flex">
-                    <Button variant="outline-secondary mx-2" active={content === "persetujuan" ? true : false} onClick={() => setContent("persetujuan")}>Persetujuan Pengajuan</Button>
-                    <Button variant="outline-secondary mx-2" active={content === "pengajuan" ? true : false} onClick={() => setContent("pengajuan")}>Pengajuan Alat</Button>
+                    {
+                        dataUser.NAMA_ROLE !== "Teknisi Laboratorium" ? (
+                            <>
+                                <Button variant="outline-secondary mx-2" active={content === "persetujuan" ? true : false} onClick={() => setContent("persetujuan")}>Persetujuan Pengajuan</Button>
+                                <Button variant="outline-secondary mx-2" active={content === "pengajuan" ? true : false} onClick={() => setContent("pengajuan")}>Pengajuan Alat</Button>
+                            </>
+                        ) : (<div></div>)
+                    }
                 </div>
                 <div className='px-4 py-3 mt-2' style={{maxWidth: '100%', background: 'white'}}>
                     {
-                        content === "persetujuan" ? (
-                            <PersetujuanPengajuan dataUser={dataUser} />
-                        ) : content === "pengajuan" ? (
+                        dataUser.NAMA_ROLE !== "Teknisi Laboratorium" ? (
+                            content === "pengajuan" ? (
+                                <RiwayatPengajuan pegawaiNomor={dataUser.NOMOR} />
+                            ) : content === "persetujuan" ? (
+                                <PersetujuanPengajuan dataUser={dataUser} />
+                            ) : <div>Silahkan Pilih Menu Diatas</div>
+                        ) : (
                             <RiwayatPengajuan pegawaiNomor={dataUser.NOMOR} />
-                        ) : <div>Silahkan pilih menu diatas</div>
+                        )
                     }
                 </div>
             </div>
@@ -38,8 +52,6 @@ const RiwayatPengajuan = ({pegawaiNomor}) => {
     const [loading, setLoading] = useState(true);
     const [dataPengajuan, setDataPengajuan] = useState([]);
     const [dataCount, setDataCount] = useState(0);
-    const [inputs, setInputs] = useState({});
-    const [dataLab, setDataLab] = useState([]);
     const [detailPengajuan, setDetailPengajuan] = useState({show: false, dataID: "", dataTitle: ""});
 
     useEffect(() => {
@@ -58,33 +70,7 @@ const RiwayatPengajuan = ({pegawaiNomor}) => {
             setDataPengajuan(null);
             setLoading(false)
         });
-
-        setDataLab(JSON.parse(localStorage.getItem("labByJurusan")))
-    }, [dataCount])
-
-    const buatPengajuan = () => {
-        if (inputs.laboratorium_id !== "Pilih Lab Tujuan") {
-            axios({
-                method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=buatPengajuan',
-                data: {
-                    ...inputs,
-                    status: "Menunggu ACC KaLab",
-                    pegawai_nomor: pegawaiNomor,
-                },
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-                }
-            })
-            .then(result => {
-                if (result.data.status) {
-                    setModal(false);
-                    setDataCount(dataCount+1);
-                }
-            })
-            .catch(err => console.log("err", err))
-        } 
-    }
+    }, [dataCount, pegawaiNomor])
 
     return (
         <>
@@ -116,48 +102,12 @@ const RiwayatPengajuan = ({pegawaiNomor}) => {
                             }
                         </div>
 
-                        <Modal show={modal} onHide={() => setModal(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Form Pengajuan Alat</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Nama Pengajuan</Form.Label>
-                                        <Form.Control
-                                            type="name"
-                                            placeholder='nama pengajuan'
-                                            onChange={(e) => setInputs({...inputs, nama: e.target.value})}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tanggal</Form.Label>
-                                        <Form.Control
-                                            type="date"
-                                            onChange={(e) => setInputs({...inputs, tanggal_pengajuan: e.target.value})}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group>
-                                        <Form.Label>Pilih Lab Tujuan</Form.Label>
-                                        <Form.Select aria-label="lab tujuan" onChange={(e) => setInputs({ ...inputs, laboratorium_id: e.target.value})}>
-                                            <option>Pilih Lab Tujuan</option>
-                                            {
-                                                dataLab.map(lab => {
-                                                    return (
-                                                        <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
-                                                    )
-                                                })
-                                            }
-                                        </Form.Select>
-                                    </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="primary" onClick={buatPengajuan}>
-                                    Buat Pengajuan
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+                        <BuatPengajuan 
+                            show={modal}
+                            onHide={() => setModal(false)}
+                            data={{pegawaiNomor}}
+                            count={() => setDataCount(dataCount+1)}
+                        />
                     </div>
 
                 ) : (

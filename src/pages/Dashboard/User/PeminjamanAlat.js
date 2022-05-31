@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form, Table, Dropdown, DropdownButton} from "react-bootstrap"
+import {Breadcrumb, Card, Button, Modal, Form, Table, Image} from "react-bootstrap"
 import DetailPeminjaman from './DetailPeminjaman'
 import axios from "axios"
 // import Swal from "sweetalert2";
@@ -14,6 +14,12 @@ const PeminjamanAlat = ({nomorPegawai}) => {
     // const [dataCount, setDataCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [inputs, setInputs] = useState({});
+
+    // const [select, setSelect] = useState(null);
+
+    // get all lab from localstorage
+    const dataLab = JSON.parse(localStorage.getItem("labByJurusan"));
+    const [getAlatLab, setAlatLab] = useState({loading: true, dataAlat: []});
 
     useEffect(() => {
         axios({
@@ -33,27 +39,49 @@ const PeminjamanAlat = ({nomorPegawai}) => {
         })
     }, [nomorPegawai]);
 
-    const buatPeminjaman = () => {
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=buatPeminjaman',
-            data: {
-                ...inputs,
-                pegawai_nomor: parseInt(nomorPegawai)
-            },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-            }
-        }).then(result => {
-            // setDataPeminjaman(result.data.data);
-            // // setDataCount(result.data.data.length);
-            // setLoading(false);
-            console.log(result);
-        }).catch((err) => {
-            // setDataPeminjaman(null);
-            // setLoading(false);
-            console.error("err", err)
-        })
+    const buatPeminjaman = (e) => {
+        e.preventDefault();
+        // axios({
+        //     method: 'post',
+        //     url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=buatPeminjaman',
+        //     data: {
+        //         ...inputs,
+        //         pegawai_nomor: parseInt(nomorPegawai)
+        //     },
+        //     headers: {
+        //         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        //     }
+        // }).then(result => {
+        //     // setDataPeminjaman(result.data.data);
+        //     // // setDataCount(result.data.data.length);
+        //     // setLoading(false);
+        //     console.log(result);
+        // }).catch((err) => {
+        //     // setDataPeminjaman(null);
+        //     // setLoading(false);
+        //     console.error("err", err)
+        // })
+
+        // console.log("select",select);
+        // console.log("inputs",inputs);
+    }
+
+    const pilihLabArea = (e) => {
+        e.preventDefault();
+        if (e.target.value !== "N/A") {
+            axios({
+                method: 'post',
+                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatLabTersedia',
+                data: { labID: parseInt(e.target.value) },
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                }
+            }).then(result => {
+                setAlatLab({...getAlatLab, loading: false, dataAlat: result.data.data});
+            }).catch((err) => {
+                setAlatLab({...getAlatLab, loading: false, dataAlat: null});
+            })
+        }
     }
 
     return (
@@ -102,99 +130,102 @@ const PeminjamanAlat = ({nomorPegawai}) => {
                         </div>
 
                         {/* modal tambah pinjam alat */}
-                        <Modal show={showPinjam} onHide={() => setShowPinjam(false)} size='lg' scrollable>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Form Peminjaman Alat</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form className="d-flex justify-content-between">
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Nama Peminjaman</Form.Label>
-                                        <Form.Control
-                                            type="name"
-                                            name='nama'
-                                            placeholder='nama peminjaman'
-                                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                        />
+                        <Modal show={showPinjam} onHide={() => setShowPinjam(false)} size='lg'>
+                            <Form onSubmit={buatPeminjaman} encType="multipart/form-data" >
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Form Peminjaman Alat</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <div className='d-flex justify-content-between'>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Nama Peminjaman</Form.Label>
+                                            <Form.Control
+                                                type="name"
+                                                name='nama'
+                                                placeholder='nama peminjaman'
+                                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Tanggal Pinjam</Form.Label>
+                                            <Form.Control
+                                                name='tanggal_pinjam'
+                                                type="date"
+                                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                            />
+                                        </Form.Group>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Tanggal Kembali</Form.Label>
+                                            <Form.Control
+                                                name='tanggal_kembali'
+                                                type="date"
+                                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                            />
+                                        </Form.Group>
+                                    </div>
+                                    
+                                    <Form.Group>
+                                        <Form.Label>Pilih Area Lab</Form.Label>
+                                        <Form.Select onChange={pilihLabArea}>
+                                            <option value="N/A">Pilih Lab Area</option>
+                                            {
+                                                dataLab.map(lab => {
+                                                    return (
+                                                        <option value={lab.ID}>{lab.NAMA}</option>
+                                                    )
+                                                })
+                                            }
+                                        </Form.Select>
                                     </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tanggal Pinjam</Form.Label>
-                                        <Form.Control
-                                            name='tanggal_pinjam'
-                                            type="date"
-                                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tanggal Kembali</Form.Label>
-                                        <Form.Control
-                                            name='tanggal_kembali'
-                                            type="date"
-                                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                        />
-                                    </Form.Group>
-                                </Form>
-                                <Form.Group>
-                                    <Form.Label>Pilih Lab Area</Form.Label>
-                                    <DropdownButton id="dropdown-basic-button" variant="outline-secondary" title="Pilih Lab Area">
-                                        <Dropdown.Item>Lab Sistem Informasi - C102</Dropdown.Item>
-                                    </DropdownButton>
-                                </Form.Group>
 
-                                <div className="d-flex justify-content-between">
-                                    {/* <span className="text-secondary">Pilih area lab terlebih dahulu</span> */}
-                                    <Card style={{ width: '13rem' }} className="my-2">
-                                        <Card.Img variant="top" src="holder.js/100px180" />
-                                        <Card.Body>
-                                            <Card.Title>Card Title</Card.Title>
-                                            <Card.Text>Tersedia : 10</Card.Text>
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <div className='w-100 d-flex justify-content-between'>
-                                                    <button className="px-2">-</button>
-                                                    <span>0</span>
-                                                    <button className="px-2">+</button>
-                                                </div>
-                                                <Button variant="success" style={{marginLeft: '10px'}} disabled>Tambah</Button>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                    <Card style={{ width: '13rem' }} className="my-2">
-                                        <Card.Img variant="top" src="holder.js/100px180" />
-                                        <Card.Body>
-                                            <Card.Title>Card Title</Card.Title>
-                                            <Card.Text>Tersedia : 10</Card.Text>
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <div className='w-100 d-flex justify-content-between'>
-                                                    <button className="px-2">-</button>
-                                                    <span>0</span>
-                                                    <button className="px-2">+</button>
-                                                </div>
-                                                <Button variant="success" style={{marginLeft: '10px'}} disabled>Tambah</Button>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                    <Card style={{ width: '13rem' }} className="my-2">
-                                        <Card.Img variant="top" src="holder.js/100px180" />
-                                        <Card.Body>
-                                            <Card.Title>Card Title</Card.Title>
-                                            <Card.Text>Tersedia : 10</Card.Text>
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <div className='w-100 d-flex justify-content-between'>
-                                                    <button className="px-2">-</button>
-                                                    <span>0</span>
-                                                    <button className="px-2">+</button>
-                                                </div>
-                                                <Button variant="success" style={{marginLeft: '10px'}} disabled>Tambah</Button>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                </div>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="primary" onClick={buatPeminjaman}>
-                                    Buat Peminjaman
-                                </Button>
-                            </Modal.Footer>
+                                    <div className="d-flex justify-content-between mt-2">
+                                        {
+                                            getAlatLab.loading ? (<div>Silahkan memilih lab area diatas terlebih dahulu</div>) : (
+                                                <Table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Gambar</th>
+                                                            <th>Nama Alat</th>
+                                                            <th>Jumlah Tersedia</th>
+                                                            <th>Jumlah Dipinjam</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            getAlatLab.dataAlat === null ? (
+                                                                <span>Tidak ada alat di lab ini</span>
+                                                            ) : 
+                                                            getAlatLab.dataAlat.map((alat, index) => {
+                                                                return (
+                                                                    <tr>
+                                                                        <td>{index+1}</td>
+                                                                        <td>
+                                                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
+                                                                        </td>
+                                                                        <td>{alat.NAMA}</td>
+                                                                        <td>{alat.JUMLAH_TERSEDIA}</td>
+                                                                        <td>
+                                                                            <Button>-</Button>
+                                                                            <span className='mx-4'>0</span>
+                                                                            <Button>+</Button>
+                                                                        </td>
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                    </tbody>
+                                                </Table>
+                                            )
+                                        }
+                                    </div>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button variant="primary" type="submit">
+                                        Buat Peminjaman
+                                    </Button>
+                                </Modal.Footer>
+                            </Form>
                         </Modal>
 
                         {/* modal detail peminjaman */}
