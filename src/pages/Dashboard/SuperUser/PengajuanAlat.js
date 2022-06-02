@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button} from "react-bootstrap";
+import {Breadcrumb, Card, Button, Table} from "react-bootstrap";
 import axios from "axios";
 
 import DetailPengajuan from './DetailPengajuan';
@@ -81,25 +81,39 @@ const RiwayatPengajuan = ({pegawaiNomor}) => {
                             <h1>Riwayat Pengajuan Alat</h1>
                             <Button onClick={() => setModal(true)}>Tambah Pengajuan</Button>
                         </div>
-                        <div className='d-flex flex-wrap justify-content-between'>
-                            {
-                                loading ? (<div>loading ...</div>) : dataPengajuan == null ? (<span>Belum Ada Pengajuan ALat</span>) : 
-                                dataPengajuan.map(data => {
-                                    let dataStatus = data.STATUS === 'Pengajuan Ditolak' ? 'text-danger' : data.STATUS === 'Dilakukan Pengadaan' ? 'text-success' : 'text-primary';
-                                    return (
-                                        <Card className="my-3" style={{width: '18rem'}} key={data.ID}>
-                                            <Card.Body>
-                                                <Card.Title className="mb-3">{data.NAMA}</Card.Title>
-                                                <div className="d-flex flex-column">
-                                                    <span className='my-2'>Tanggal : {data.TANGGAL_PENGAJUAN}</span>
-                                                    <span>Status : <span className={dataStatus}>{data.STATUS}</span> </span>
-                                                    <Button variant="outline-primary" className="my-3" onClick={() => setDetailPengajuan({show: true, dataID: data.ID, dataTitle: data.NAMA})} >Detail</Button>
-                                                </div>
-                                            </Card.Body>
-                                        </Card>
-                                    )
-                                })
-                            }
+                        <div>
+                            <Table striped>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nama Pengajuan</th>
+                                        <th>Tanggal Pengajuan</th>
+                                        <th>Status</th>
+                                        <th>Detail Pengajuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        loading ? (<div>Loading</div>) : dataPengajuan == null ? (<span>Belum Ada Pengajuan ALat</span>) : 
+                                        dataPengajuan.map((data, index) => {
+                                            return (
+                                                <tr>
+                                                    <td className='align-middle'>{index+1}</td>
+                                                    <td className='align-middle'>{data.NAMA}</td>
+                                                    <td className='align-middle'>{data.TANGGAL_PENGAJUAN}</td>
+                                                    <td className='align-middle'>{data.STATUS}</td>
+                                                    <td className='align-middle'>
+                                                        <Button 
+                                                            variant="primary"
+                                                            onClick={() => setDetailPengajuan({show: true, dataID: data.ID, dataTitle: data.NAMA})}
+                                                        >Detail</Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
                         </div>
 
                         <BuatPengajuan 

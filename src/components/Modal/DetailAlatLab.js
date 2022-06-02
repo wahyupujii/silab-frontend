@@ -4,6 +4,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
+    console.log(data)
     const hapusAlatLab = (id) => {
         Swal.fire({
             icon: 'question',
@@ -54,6 +55,30 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
+                        <Form.Label>Merk Alat</Form.Label>
+                        <Form.Control
+                            type="name"
+                            value={data.dataAlat.MERK}
+                            readOnly
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Type Alat</Form.Label>
+                        <Form.Control
+                            type="name"
+                            value={data.dataAlat.TYPE}
+                            readOnly
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Spesifikasi Alat</Form.Label>
+                        <Form.Control
+                            type="name"
+                            value={data.dataAlat.SPEC}
+                            readOnly
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
                         <Form.Label>Jumlah Total</Form.Label>
                         <Form.Control
                             type="jumlah_total"
@@ -70,6 +95,14 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
+                        <Form.Label>Status Alat</Form.Label>
+                        <Form.Control
+                            type="status_alat"
+                            value={data.dataAlat.STATUS_ALAT}
+                            readOnly
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
                         <Form.Label>Tahun</Form.Label>
                         <Form.Control
                             type="tahun"
@@ -81,7 +114,7 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                         <Form.Label>No Seri</Form.Label>
                         <Form.Control
                             type="seri"
-                            value={data.dataAlat.NOMOR_SERI}
+                            value={data.dataAlat.NOMOR_SERI === null ? "-" : data.dataAlat.NOMOR_SERI}
                             readOnly
                         />
                     </Form.Group>

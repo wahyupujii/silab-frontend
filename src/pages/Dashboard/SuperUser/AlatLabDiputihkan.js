@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Breadcrumb, Card, Button } from 'react-bootstrap'
+import { Breadcrumb, Card, Button, Dropdown } from 'react-bootstrap'
 import axios from "axios";
 
 // component
@@ -36,19 +36,32 @@ const AlatLabDiputihkan = (props) => {
                 <Breadcrumb.Item onClick={() => props.handleBack(false)} >Pilih Area Lab</Breadcrumb.Item>
                 <Breadcrumb.Item>{props.data.labTitle}</Breadcrumb.Item>
             </Breadcrumb>
-            <h2>Informasi Semua Alat Lab</h2>
+            <div className="d-flex justify-content-between">
+                <h2>Informasi Semua Alat Lab</h2>
+                <Dropdown>
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        Pilih Alat Sesuai Status
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
             <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
                 {
                     loading ? (<span>loading ... </span>) : dataAlat === null ? (<span>Belum ada alat di lab ini</span>) : (
                         dataAlat.map(data => {
                             return (
-                                <Card style={{ width: '13rem' }} className="my-2" key={data.ID}>
+                                <Card style={{ width: '15rem' }} className="my-2 shadow bg-white rounded" key={data.ID}>
                                     <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
                                         <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
-                                        <Card.Text>Status : <span className={data.STATUS_ALAT === "TERSEDIA" ? "text-success" : "text-danger"} >{data.STATUS_ALAT}</span></Card.Text>
-                                        <Card.Text>No Seri : <span>{data.NOMOR_SERI}</span></Card.Text>
+                                        <Card.Text>Status : <span className={data.STATUS_ALAT === "BAIK" ? "text-success" : "text-danger"} >{data.STATUS_ALAT}</span></Card.Text>
+                                        <Card.Text>No Seri : <span>{data.NOMOR_SERI === null ? "-" : data.NOMOR_SERI}</span></Card.Text>
                                         <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>
                                     </Card.Body>
                                 </Card>

@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 
 // component
 import { TambahAlatBaru } from '../../../components';
+import { Link } from 'react-router-dom';
 
 const DetailPengajuan = (props) => {
     const [show, setShow] = useState(false);
@@ -63,9 +64,15 @@ const DetailPengajuan = (props) => {
 
     return (
         <div className='w-100 p-3'>
-            <div className="d-flex justify-content-between">
-                <h2>{props.data.dataTitle}</h2>
-                <Button variant="primary" onClick={() => setShow(true)}>Tambah Alat</Button>
+            <div>
+                {/* <Button>Kembali</Button> */}
+                <div className='d-flex justify-content-between'>
+                    <div className='d-flex align-items-center'>
+                        <Link className="mx-3" onClick={() => props.handleBack()}>Kembali</Link>
+                        <h2>{props.data.dataTitle}</h2>
+                    </div>
+                    <Button variant="primary" onClick={() => setShow(true)}>Tambah Alat</Button>
+                </div>
             </div>
             <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
                 {

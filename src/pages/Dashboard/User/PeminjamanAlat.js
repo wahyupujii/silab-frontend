@@ -4,22 +4,31 @@ import DetailPeminjaman from './DetailPeminjaman'
 import axios from "axios"
 // import Swal from "sweetalert2";
 
+// component 
+import { PinjamAlat } from '../../../components/Modal'
+
 const PeminjamanAlat = ({nomorPegawai}) => {
     // state untuk pengaturan component modal
     const [showPinjam, setShowPinjam] = useState(false)
-    const [showDetail, setShowDetail] = useState(false)
+    // const [showDetail, setShowDetail] = useState(false)
     
     const [detailPeminjaman, setDetailPeminjaman] = useState(false)
     const [dataPeminjaman, setDataPeminjaman] = useState(null);
-    // const [dataCount, setDataCount] = useState(0);
+    const [dataCount, setDataCount] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [inputs, setInputs] = useState({});
+
+    // const [inputs, setInputs] = useState({
+    //     nama: "",
+    //     tanggal_pinjam: "",
+    //     tanggal_kembali: "",
+    //     alat_lab : []
+    // });
 
     // const [select, setSelect] = useState(null);
 
     // get all lab from localstorage
-    const dataLab = JSON.parse(localStorage.getItem("labByJurusan"));
-    const [getAlatLab, setAlatLab] = useState({loading: true, dataAlat: []});
+    // const dataLab = JSON.parse(localStorage.getItem("labByJurusan"));
+    // const [getAlatLab, setAlatLab] = useState({loading: true, dataAlat: []});
 
     useEffect(() => {
         axios({
@@ -31,16 +40,16 @@ const PeminjamanAlat = ({nomorPegawai}) => {
             }
         }).then(result => {
             setDataPeminjaman(result.data.data);
-            // setDataCount(result.data.data.length);
+            setDataCount(result.data.data.length);
             setLoading(false);
         }).catch(() => {
             setDataPeminjaman(null);
             setLoading(false);
         })
-    }, [nomorPegawai]);
+    }, [nomorPegawai, dataCount]);
 
-    const buatPeminjaman = (e) => {
-        e.preventDefault();
+    // const buatPeminjaman = (e) => {
+    //     e.preventDefault();
         // axios({
         //     method: 'post',
         //     url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=buatPeminjaman',
@@ -64,25 +73,79 @@ const PeminjamanAlat = ({nomorPegawai}) => {
 
         // console.log("select",select);
         // console.log("inputs",inputs);
-    }
+    // }
 
-    const pilihLabArea = (e) => {
-        e.preventDefault();
-        if (e.target.value !== "N/A") {
-            axios({
-                method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatLabTersedia',
-                data: { labID: parseInt(e.target.value) },
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-                }
-            }).then(result => {
-                setAlatLab({...getAlatLab, loading: false, dataAlat: result.data.data});
-            }).catch((err) => {
-                setAlatLab({...getAlatLab, loading: false, dataAlat: null});
-            })
-        }
-    }
+    // const pilihLabArea = (e) => {
+    //     e.preventDefault();
+    //     if (e.target.value !== "N/A") {
+    //         axios({
+    //             method: 'post',
+    //             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatLabTersedia',
+    //             data: { labID: parseInt(e.target.value) },
+    //             headers: {
+    //                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+    //             }
+    //         }).then(result => {
+    //             // let temp = result.data.data;
+    //             // temp.map(obj => {
+    //             //     setAlatLab({...getAlatLab, dataAlat: [...getAlatLab.dataAlat, {...obj, jumlahDipinjam: 0}]})
+    //             // })
+    //             let temp = [];
+    //             result.data.data.map(obj => {
+    //                 temp.push({...obj, jumlahDipinjam: 0})
+    //             })
+    //             setAlatLab({...getAlatLab, loading: false, dataAlat: temp});
+    //         }).catch((err) => {
+    //             setAlatLab({...getAlatLab, loading: false, dataAlat: null});
+    //         })
+    //     }
+    // }
+
+    // const plusAlatPinjam = (id, jumlah_tersedia) => {
+    //     // check di dalam state apakah sudah ada alat lab dengan id tersebut dengan fungsi filter
+    //     const result = inputs.alat_lab.filter((obj) => {
+    //         // if (obj.hasOwnProperty(id)) {
+    //             return obj.id = id
+    //         // }
+    //     })
+
+    //     const selectedAlatLab = getAlatLab.dataAlat.filter((obj) => {return obj.ID = id});
+
+    //     // jika ada,
+        
+    //     if (selectedAlatLab) {
+            
+    //     }
+        
+    //     if (result.length !== 0) {
+    //         if ((result[0].jumlah + 1) < jumlah_tersedia) {
+    //             result[0].jumlah += 1
+    //             let index = getAlatLab.dataAlat.indexOf(selectedAlatLab)
+    //             setAlatLab({...getAlatLab, dataAlat})
+    //         } else {
+    //             alert("jumlah melebihi batas")
+    //         }
+    //     } else {
+    //         let obj = {
+    //             id: id,
+    //             jumlah: 1
+    //         }
+    //         inputs.alat_lab.push(obj)
+    //         selectedAlatLab.jumlahDipinjam = 1;
+
+    //     }
+
+    //     // jika belum, buat objek
+
+    //     // masukkan / push ke state array
+
+
+
+    // }
+
+    // const minusAlatPinjam = (id, jumlah_tersedia) => {
+
+    // }
 
     return (
         <>
@@ -129,107 +192,14 @@ const PeminjamanAlat = ({nomorPegawai}) => {
                             </Card> */}
                         </div>
 
-                        {/* modal tambah pinjam alat */}
-                        <Modal show={showPinjam} onHide={() => setShowPinjam(false)} size='lg'>
-                            <Form onSubmit={buatPeminjaman} encType="multipart/form-data" >
-                                <Modal.Header closeButton>
-                                    <Modal.Title>Form Peminjaman Alat</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body>
-                                    <div className='d-flex justify-content-between'>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Nama Peminjaman</Form.Label>
-                                            <Form.Control
-                                                type="name"
-                                                name='nama'
-                                                placeholder='nama peminjaman'
-                                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Tanggal Pinjam</Form.Label>
-                                            <Form.Control
-                                                name='tanggal_pinjam'
-                                                type="date"
-                                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Tanggal Kembali</Form.Label>
-                                            <Form.Control
-                                                name='tanggal_kembali'
-                                                type="date"
-                                                onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                            />
-                                        </Form.Group>
-                                    </div>
-                                    
-                                    <Form.Group>
-                                        <Form.Label>Pilih Area Lab</Form.Label>
-                                        <Form.Select onChange={pilihLabArea}>
-                                            <option value="N/A">Pilih Lab Area</option>
-                                            {
-                                                dataLab.map(lab => {
-                                                    return (
-                                                        <option value={lab.ID}>{lab.NAMA}</option>
-                                                    )
-                                                })
-                                            }
-                                        </Form.Select>
-                                    </Form.Group>
-
-                                    <div className="d-flex justify-content-between mt-2">
-                                        {
-                                            getAlatLab.loading ? (<div>Silahkan memilih lab area diatas terlebih dahulu</div>) : (
-                                                <Table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>#</th>
-                                                            <th>Gambar</th>
-                                                            <th>Nama Alat</th>
-                                                            <th>Jumlah Tersedia</th>
-                                                            <th>Jumlah Dipinjam</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {
-                                                            getAlatLab.dataAlat === null ? (
-                                                                <span>Tidak ada alat di lab ini</span>
-                                                            ) : 
-                                                            getAlatLab.dataAlat.map((alat, index) => {
-                                                                return (
-                                                                    <tr>
-                                                                        <td>{index+1}</td>
-                                                                        <td>
-                                                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
-                                                                        </td>
-                                                                        <td>{alat.NAMA}</td>
-                                                                        <td>{alat.JUMLAH_TERSEDIA}</td>
-                                                                        <td>
-                                                                            <Button>-</Button>
-                                                                            <span className='mx-4'>0</span>
-                                                                            <Button>+</Button>
-                                                                        </td>
-                                                                    </tr>
-                                                                )
-                                                            })
-                                                        }
-                                                    </tbody>
-                                                </Table>
-                                            )
-                                        }
-                                    </div>
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button variant="primary" type="submit">
-                                        Buat Peminjaman
-                                    </Button>
-                                </Modal.Footer>
-                            </Form>
-                        </Modal>
+                        {/* modal pinjam alat */}
+                        <PinjamAlat 
+                            show={showPinjam}
+                            onHide={() => setShowPinjam(false)}
+                        />
 
                         {/* modal detail peminjaman */}
-                        <Modal show={showDetail} onHide={() => setShowDetail(false)}>
+                        {/* <Modal show={showDetail} onHide={() => setShowDetail(false)}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Detail Peminjaman Alat</Modal.Title>
                             </Modal.Header>
@@ -271,12 +241,12 @@ const PeminjamanAlat = ({nomorPegawai}) => {
                                     </Form.Group>
                                 </Form>
                             </Modal.Body>
-                            {/* <Modal.Footer>
+                            <Modal.Footer>
                                 <Button variant="primary">
                                     Buat Peminjaman
                                 </Button>
-                            </Modal.Footer> */}
-                        </Modal>
+                            </Modal.Footer>
+                        </Modal> */}
                     </div>      
                 ) : (
                     <DetailPeminjaman handleBack={(value) => setDetailPeminjaman(value)} />

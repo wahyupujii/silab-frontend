@@ -12,9 +12,19 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
 
         let formDataAlat = new FormData();
         formDataAlat.append('NAMA', inputs.nama);
+        formDataAlat.append('MERK', inputs.merk);
+        formDataAlat.append('TYPE', inputs.type);
+        formDataAlat.append('SPESIFIKASI', inputs.spesifikasi);
+
         formDataAlat.append('JUMLAH', inputs.jumlah);
         formDataAlat.append('TAHUN', inputs.tahun);
-        formDataAlat.append('NOMOR_SERI', inputs.no_seri);
+
+        if (inputs.hasOwnProperty("NOMOR_SERI")) {
+            formDataAlat.append('NOMOR_SERI', inputs.no_seri);
+        } else {
+            formDataAlat.append('NOMOR_SERI', "");
+        }
+
         formDataAlat.append('GAMBAR', inputs.gambar);
         formDataAlat.append('TEKNISINOMOR', parseInt(data.dataUser.NOMOR));
         formDataAlat.append('DATEKELOLA', today)
@@ -57,6 +67,36 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
+                        <Form.Label>Merk Alat</Form.Label>
+                        <Form.Control
+                            name="merk"
+                            type="text"
+                            placeholder='Merk Alat'
+                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                            required={true}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Type Alat</Form.Label>
+                        <Form.Control
+                            name="type"
+                            type="text"
+                            placeholder='Type Alat'
+                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                            required={true}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Spesifikasi</Form.Label>
+                        <Form.Control
+                            name="spesifikasi"
+                            type="text"
+                            placeholder='Nama Alat'
+                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                            required={true}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
                         <Form.Label>Jumlah Total</Form.Label>
                         <Form.Control
                             name="jumlah"
@@ -83,7 +123,6 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                             type="text"
                             placeholder='No Seri'
                             onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                            required={true}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">

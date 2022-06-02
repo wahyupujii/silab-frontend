@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button} from "react-bootstrap"
+import {Breadcrumb, Card, Button, Form} from "react-bootstrap"
 import axios from "axios";
 import Swal from 'sweetalert2';
 import { DetailAlatLab, EditAlatLab, TambahAlatLab } from '../../../components/Modal';
@@ -49,7 +49,7 @@ const AlatLabTersedia = (props) => {
     useEffect(() => {
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatLabTersedia',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatKondisiBaik',
             data: {labID: props.data.labID},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -83,16 +83,23 @@ const AlatLabTersedia = (props) => {
                     loading ? (<span>loading ... </span>) : dataAlat === null ? (<span>Belum ada alat di lab ini</span>) : (
                         dataAlat.map(data => {
                             return (
-                                <Card style={{ width: '15rem' }} className="my-2" key={data.ID}>
+                                <Card style={{ width: '18rem' }} className="my-2 shadow bg-white rounded" key={data.ID}>
                                     <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
                                     <Card.Body>
                                         <Card.Title>{data.NAMA}</Card.Title>
                                         <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
-                                        <Card.Text>No Seri : {data.NOMOR_SERI}</Card.Text>
+                                        <Card.Text>Status : <span className={data.STATUS_ALAT === "BAIK" ? "text-success" : "text-danger"} >{data.STATUS_ALAT}</span></Card.Text>
+                                        <Card.Text>No Seri : {data.NOMOR_SERI === null ? "-" : data.NOMOR_SERI}</Card.Text>
                                         <div className="w-100 d-flex justify-content-between" >
                                             {
                                                 props.dataUser.NAMA_ROLE !== 'Teknisi Laboratorium' ? <div></div> : 
-                                                <Button variant="outline-primary" onClick={() => putihkanAlat(data.ID)}>Putihkan</Button>
+                                                // <Button variant="outline-primary" onClick={() => putihkanAlat(data.ID)}>Putihkan</Button>
+                                                <Form.Select name="status_alat">
+                                                    <option>Ubah Status Alat</option>
+                                                    <option>Putihkan</option>
+                                                    <option>Rusak Ringan</option>
+                                                    <option>Rusak Berat</option>
+                                                </Form.Select>
                                             }
                                             <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>                                            
                                         </div>
