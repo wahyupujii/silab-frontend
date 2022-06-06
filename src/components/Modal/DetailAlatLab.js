@@ -4,7 +4,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
-    console.log(data)
     const hapusAlatLab = (id) => {
         Swal.fire({
             icon: 'question',
@@ -124,7 +123,7 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                 {
                     type === "primary" ? (
                         <>
-                            <Button variant="secondary" onClick={() => editAlatLab()}>
+                            <Button variant="secondary" onClick={() => editAlatLab()} disabled>
                                 Edit Data
                             </Button>        
                             <Button variant="danger" onClick={() => hapusAlatLab(data.dataAlat.ID)} >

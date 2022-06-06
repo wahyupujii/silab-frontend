@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Form} from "react-bootstrap"
+import {Breadcrumb, Card, Button, Form, Table, Image} from "react-bootstrap"
 import axios from "axios";
 import Swal from 'sweetalert2';
 import { DetailAlatLab, EditAlatLab, TambahAlatLab } from '../../../components/Modal';
@@ -72,43 +72,48 @@ const AlatLabTersedia = (props) => {
                 <Breadcrumb.Item>{props.data.labTitle}</Breadcrumb.Item>
             </Breadcrumb>
             <div className='d-flex justify-content-between align-items-center'>
-                <h2>Alat Lab</h2>
+                <h2>Informasi Alat Lab Tersedia</h2>
                 { 
                     props.dataUser.NAMA_ROLE !== 'Teknisi Laboratorium' ? <div></div> : 
                     <Button className="primary" onClick={() => setModalTambah(true)} >Tambah Alat</Button>
                 }
             </div>
-            <div className={`d-flex flex-wrap ${dataCount > 4 && dataCount !== 0 ? 'justify-content-between' : 'justify-content-evenly'} px-4 py-3`} style={{maxWidth: '100%', background: 'white'}}>
-                {
-                    loading ? (<span>loading ... </span>) : dataAlat === null ? (<span>Belum ada alat di lab ini</span>) : (
-                        dataAlat.map(data => {
-                            return (
-                                <Card style={{ width: '18rem' }} className="my-2 shadow bg-white rounded" key={data.ID}>
-                                    <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
-                                    <Card.Body>
-                                        <Card.Title>{data.NAMA}</Card.Title>
-                                        <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
-                                        <Card.Text>Status : <span className={data.STATUS_ALAT === "BAIK" ? "text-success" : "text-danger"} >{data.STATUS_ALAT}</span></Card.Text>
-                                        <Card.Text>No Seri : {data.NOMOR_SERI === null ? "-" : data.NOMOR_SERI}</Card.Text>
-                                        <div className="w-100 d-flex justify-content-between" >
-                                            {
-                                                props.dataUser.NAMA_ROLE !== 'Teknisi Laboratorium' ? <div></div> : 
-                                                // <Button variant="outline-primary" onClick={() => putihkanAlat(data.ID)}>Putihkan</Button>
-                                                <Form.Select name="status_alat">
-                                                    <option>Ubah Status Alat</option>
-                                                    <option>Putihkan</option>
-                                                    <option>Rusak Ringan</option>
-                                                    <option>Rusak Berat</option>
-                                                </Form.Select>
-                                            }
-                                            <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>                                            
-                                        </div>
-                                    </Card.Body>
-                                </Card>
-                            )
-                        })
-                    )
-                }
+            <div className="mt-2">
+                <Table striped>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Gambar</th>
+                            <th>Nama Alat</th>
+                            <th>Jumlah Tersedia</th>
+                            <th>Status</th>
+                            <th>No Seri</th>
+                            <th>Detail Alat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            loading ? (<div>Loading</div>) : dataAlat == null ? (<span>Belum Ada ALat Di Lab Ini</span>) : 
+                            dataAlat.map((data, index) => {
+                                return (
+                                    <tr>
+                                        <td className='align-middle'>{index+1}</td>
+                                        <td className='align-middle'>
+                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
+                                        </td>
+                                        <td className='align-middle'>{data.NAMA}</td>
+                                        <td className='align-middle'>{data.JUMLAH_TERSEDIA}</td>
+                                        <td className='align-middle'>{data.STATUS_ALAT}</td>
+                                        <td className='align-middle'>{data.NOMOR_SERI}</td>
+                                        <td className='align-middle'>
+                                            <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
+                                        </td>
+                                    </tr>
+                                )
+                            })
+                        }
+                    </tbody>
+                </Table>
             </div>
 
             {/* modal detail alat */}

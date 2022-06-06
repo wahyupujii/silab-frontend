@@ -100,8 +100,8 @@ const PersetujuanPengajuan = ({dataUser}) => {
                                     <th>No</th>
                                     <th>Yang Mengajukan</th>
                                     <th>Nama Pengajuan</th>
-                                    <th>Detail</th>
                                     <th>Status</th>
+                                    <th>Detail</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -112,10 +112,10 @@ const PersetujuanPengajuan = ({dataUser}) => {
                                                 <td>{++index}</td>
                                                 <td>{item.NAMA_PEGAWAI}</td>
                                                 <td>{item.NAMA_PENGAJUAN}</td>
+                                                <td className='text-primary'>{item.STATUS}</td>
                                                 <td>
                                                     <Button variant="outline-primary" onClick={() => setShowDetail({show: true, dataID: item.ID, dataTitle: item.NAMA_PENGAJUAN})}>Detail</Button>
                                                 </td>
-                                                <td className='text-primary'>{item.STATUS}</td>
                                             </tr>
                                         )
                                     })

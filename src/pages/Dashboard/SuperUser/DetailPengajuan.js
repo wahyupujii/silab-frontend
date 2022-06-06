@@ -48,7 +48,7 @@ const DetailPengajuan = (props) => {
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                     }
-                }).then(result => {
+                }).then(() => {
                     setDataCount(dataCount - 1)
                     Swal.fire({
                         icon: 'success',
@@ -65,7 +65,6 @@ const DetailPengajuan = (props) => {
     return (
         <div className='w-100 p-3'>
             <div>
-                {/* <Button>Kembali</Button> */}
                 <div className='d-flex justify-content-between'>
                     <div className='d-flex align-items-center'>
                         <Link className="mx-3" onClick={() => props.handleBack()}>Kembali</Link>
@@ -82,13 +81,17 @@ const DetailPengajuan = (props) => {
                         ) : (
                         data.map(data => {
                             return (
-                                <Card className="my-3" style={{width: '18rem'}} key={data.ID} >
+                                <Card className="shadow bg-white rounded my-3" style={{width: '18rem'}} key={data.ID} >
                                     <Card.Body>
                                         <Card.Title className="mb-3">{data.NAMA}</Card.Title>
                                         <div className="d-flex flex-column">
                                             <span>Jumlah : {data.JUMLAH}</span>
-                                            <span className="text-danger">Catatan : {data.CATATAN}</span>
-                                            <Button variant="danger" className="my-3" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
+                                            <span className="text-secondary">Catatan : {data.CATATAN}</span>
+                                            <div className="d-flex justify-content-between">
+                                                <Button variant="primary" className="mt-2">Lihat File</Button>
+                                                <Button variant="secondary" className="mt-2" disabled>Edit</Button>
+                                                <Button variant="danger" className="mt-2" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
+                                            </div>
                                         </div>
                                     </Card.Body>
                                 </Card>

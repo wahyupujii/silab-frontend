@@ -19,7 +19,7 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
         formDataAlat.append('JUMLAH', inputs.jumlah);
         formDataAlat.append('TAHUN', inputs.tahun);
 
-        if (inputs.hasOwnProperty("NOMOR_SERI")) {
+        if (inputs.hasOwnProperty("no_seri")) {
             formDataAlat.append('NOMOR_SERI', inputs.no_seri);
         } else {
             formDataAlat.append('NOMOR_SERI', "");
@@ -37,15 +37,17 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
-        }).then(() => {
+        }).then((result) => {
             onHide(false);
             count();
-        }).catch(() => {
+            console.log("result", result)
+        }).catch((err) => {
             Swal.fire({
                 icon: 'error',
                 title: "Gagal menambahkan data alat lab",
                 text: 'Terdapat kesalahan inputan / anda bukan teknisi dari lab ini'
             })
+            formDataAlat.delete('GAMBAR');
         })        
     }
 
@@ -100,7 +102,7 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                         <Form.Label>Jumlah Total</Form.Label>
                         <Form.Control
                             name="jumlah"
-                            type="text"
+                            type="number"
                             placeholder='Jumlah Total'
                             onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                             required={true}

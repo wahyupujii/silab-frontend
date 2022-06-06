@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Breadcrumb, Card, Button, Dropdown } from 'react-bootstrap'
+import { Breadcrumb, Card, Button, Dropdown, Table, Image} from 'react-bootstrap'
 import axios from "axios";
 
 // component
@@ -50,25 +50,43 @@ const AlatLabDiputihkan = (props) => {
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
-                {
-                    loading ? (<span>loading ... </span>) : dataAlat === null ? (<span>Belum ada alat di lab ini</span>) : (
-                        dataAlat.map(data => {
-                            return (
-                                <Card style={{ width: '15rem' }} className="my-2 shadow bg-white rounded" key={data.ID}>
-                                    <Card.Img variant="top" src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} />
-                                    <Card.Body>
-                                        <Card.Title>{data.NAMA}</Card.Title>
-                                        <Card.Text>Jumlah Tersedia : {data.JUMLAH_TERSEDIA}</Card.Text>
-                                        <Card.Text>Status : <span className={data.STATUS_ALAT === "BAIK" ? "text-success" : "text-danger"} >{data.STATUS_ALAT}</span></Card.Text>
-                                        <Card.Text>No Seri : <span>{data.NOMOR_SERI === null ? "-" : data.NOMOR_SERI}</span></Card.Text>
-                                        <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>
-                                    </Card.Body>
-                                </Card>
-                            )
-                        })
-                    )
-                }
+
+            <div className="mt-2">
+                <Table striped>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Gambar</th>
+                            <th>Nama Alat</th>
+                            <th>Jumlah Tersedia</th>
+                            <th>Status</th>
+                            <th>No Seri</th>
+                            <th>Detail Alat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            loading ? (<div>Loading</div>) : dataAlat == null ? (<span>Belum Ada ALat Di Lab Ini</span>) : 
+                            dataAlat.map((data, index) => {
+                                return (
+                                    <tr>
+                                        <td className='align-middle'>{index+1}</td>
+                                        <td className='align-middle'>
+                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
+                                        </td>
+                                        <td className='align-middle'>{data.NAMA}</td>
+                                        <td className='align-middle'>{data.JUMLAH_TERSEDIA}</td>
+                                        <td className='align-middle'>{data.STATUS_ALAT}</td>
+                                        <td className='align-middle'>{data.NOMOR_SERI}</td>
+                                        <td className='align-middle'>
+                                            <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>
+                                        </td>
+                                    </tr>
+                                )
+                            })
+                        }
+                    </tbody>
+                </Table>
             </div>
 
             {/* modal detail alat yang diputihkan */}

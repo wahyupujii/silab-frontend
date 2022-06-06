@@ -96,12 +96,13 @@ const RiwayatPengajuan = ({pegawaiNomor}) => {
                                     {
                                         loading ? (<div>Loading</div>) : dataPengajuan == null ? (<span>Belum Ada Pengajuan ALat</span>) : 
                                         dataPengajuan.map((data, index) => {
+                                            let status = data.STATUS === 'Pengajuan Ditolak' ? 'text-danger' : data.STATUS === 'Dilakukan Pengadaan' ? 'text-success' : 'text-primary';
                                             return (
                                                 <tr>
                                                     <td className='align-middle'>{index+1}</td>
                                                     <td className='align-middle'>{data.NAMA}</td>
                                                     <td className='align-middle'>{data.TANGGAL_PENGAJUAN}</td>
-                                                    <td className='align-middle'>{data.STATUS}</td>
+                                                    <td className={`${status} align-middle`}>{data.STATUS}</td>
                                                     <td className='align-middle'>
                                                         <Button 
                                                             variant="primary"

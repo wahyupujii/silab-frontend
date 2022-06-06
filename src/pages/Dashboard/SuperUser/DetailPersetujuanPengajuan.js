@@ -131,6 +131,7 @@ const DetailPersetujuanPengajuan = (props) => {
                                             <span>Jumlah : {data.JUMLAH}</span>
                                             <span className="text-danger">Catatan : {data.CATATAN}</span>
                                         </div>
+                                        <Button className="primary mt-3" disabled>Lihat File</Button>
                                     </Card.Body>
                                 </Card>
                             )

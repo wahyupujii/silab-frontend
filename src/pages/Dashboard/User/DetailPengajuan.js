@@ -11,7 +11,6 @@ const DetailPengajuan = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [dataCount, setDataCount] = useState(0);
-    
     useEffect(() => {
         axios({
             method: 'post',
@@ -31,22 +30,32 @@ const DetailPengajuan = (props) => {
     },[dataCount, props.data.dataID])
 
     const deleteAlat = (id) => {
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatBaru.php?function=deleteAlatBaru',
-            data: {alatBaruID: id},
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        Swal.fire({
+            icon: 'question',
+            title: 'Anda yakin ingin MENGHAPUS ALAT ini ? ',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatBaru.php?function=deleteAlatBaru',
+                    data: {alatBaruID: id},
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(result => {
+                    setDataCount(dataCount - 1)
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Alat Baru berhasil dihapus',
+                    })
+                }).catch(err => {
+                    console.log("err", err)
+                })
             }
-        }).then(result => {
-            setDataCount(dataCount - 1)
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Alat Baru berhasil dihapus',
-            })
-        }).catch(err => {
-            console.log("err", err)
         })
     }
 
@@ -69,13 +78,17 @@ const DetailPengajuan = (props) => {
                         ) : (
                         data.map(data => {
                             return (
-                                <Card className="my-3" style={{width: '18rem'}} key={data.ID} >
+                                <Card className="shadow bg-white rounded my-3" style={{width: '18rem'}} key={data.ID} >
                                     <Card.Body>
                                         <Card.Title className="mb-3">{data.NAMA}</Card.Title>
                                         <div className="d-flex flex-column">
                                             <span>Jumlah : {data.JUMLAH}</span>
                                             <span className="text-danger">Catatan : {data.CATATAN}</span>
-                                            <Button variant="danger" className="my-3" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
+                                            <div className="d-flex justify-content-between">
+                                                <Button variant="primary" className="my-3">Lihat File</Button>
+                                                <Button variant="secondary" className="my-3" disabled>Edit</Button>
+                                                <Button variant="danger" className="my-3" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
+                                            </div>
                                         </div>
                                     </Card.Body>
                                 </Card>
