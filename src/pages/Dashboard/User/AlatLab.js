@@ -31,48 +31,51 @@ const AlatLab = (props) => {
         <div className='w-100 p-3'>
             <Breadcrumb>
                 <Breadcrumb.Item href="#">Dashboard</Breadcrumb.Item>
-                <Breadcrumb.Item onClick={() => props.handleBack(false)} >Pilih Area Lab</Breadcrumb.Item>
-                <Breadcrumb.Item>{props.data.labTitle}</Breadcrumb.Item>
+                <Breadcrumb.Item>Informasi Alat Lab Tersedia</Breadcrumb.Item>
             </Breadcrumb>
-            <h2>Alat Lab</h2>
 
-            <div className="mt-2">
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Gambar</th>
-                            <th>Nama Alat</th>
-                            <th>Jumlah Tersedia</th>
-                            <th>Status</th>
-                            <th>No Seri</th>
-                            <th>Detail Alat</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            loading ? (<div>Loading</div>) : dataAlat == null ? (<span>Belum Ada ALat Di Lab Ini</span>) : 
-                            dataAlat.map((data, index) => {
-                                return (
-                                    <tr>
-                                        <td className='align-middle'>{index+1}</td>
-                                        <td className='align-middle'>
-                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
-                                        </td>
-                                        <td className='align-middle'>{data.NAMA}</td>
-                                        <td className='align-middle'>{data.JUMLAH_TERSEDIA}</td>
-                                        <td className='align-middle'>{data.STATUS_ALAT}</td>
-                                        <td className='align-middle'>{data.NOMOR_SERI}</td>
-                                        <td className='align-middle'>
-                                            <Button variant="primary" onClick={() => setShow({show:true, detailAlat: data})}>Detail</Button>
-                                        </td>
-                                    </tr>
-                                )
-                            })
-                        }
-                    </tbody>
-                </Table>
-            </div>
+            <h2>Alat Lab Tersedia</h2>
+            {
+                loading ? <div>Loading ... </div> : dataAlat === null ? (<div>Belum Ada Alat Di Lab Ini</div>) : (
+                    <div className="mt-2">
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Gambar</th>
+                                    <th>Nama Alat</th>
+                                    <th>Jumlah</th>
+                                    <th>Status</th>
+                                    <th>Kondisi</th>
+                                    <th>Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    dataAlat.map((data, index) => {
+                                        return (
+                                            <tr key={data.ID} >
+                                                <td className='align-middle'>{index+1}</td>
+                                                <td className='align-middle'>
+                                                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
+                                                </td>
+                                                <td className='align-middle'>{data.NAMA}</td>
+                                                <td className='align-middle'>{data.JUMLAH}</td>
+                                                <td className='align-middle'>{data.STATUS_ALAT}</td>
+                                                <td className='align-middle'>{data.KONDISI_ALAT}</td>
+                                                <td className='align-middle'>
+                                                    <Button variant="primary" onClick={() => setShow({show:true, detailAlat: data})}>Detail</Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </Table>
+                    </div>
+                    
+                )
+            }
 
             {/* modal detail alat yang diputihkan */}
             <DetailAlatLab 

@@ -11,7 +11,7 @@ const AlatLabTersedia = (props) => {
     const [dataAlat, setDataAlat] = useState(null);
     const [loading, setLoading] = useState(null);
     const [dataCount, setDataCount] = useState(0);
-    
+
     const putihkanAlat = (id) => {
         Swal.fire({
             icon: 'question',
@@ -29,7 +29,6 @@ const AlatLabTersedia = (props) => {
                         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                     }
                 }).then((result) => {
-                    console.log(result);
                     setDataCount(dataCount-1);
                     Swal.fire({
                         icon: 'success',
@@ -68,8 +67,16 @@ const AlatLabTersedia = (props) => {
         <div className='w-100 p-3'>
             <Breadcrumb>
                 <Breadcrumb.Item href="#">Dashboard</Breadcrumb.Item>
-                <Breadcrumb.Item onClick={() => props.handleBack(false)} >Pilih Area Lab</Breadcrumb.Item>
-                <Breadcrumb.Item>{props.data.labTitle}</Breadcrumb.Item>
+                {
+                    props.dataUser.NAMA_ROLE === "Teknisi Laboratorium" ? (
+                        <>
+                            <Breadcrumb.Item onClick={() => props.handleBack(false)} >Pilih Area Lab</Breadcrumb.Item>
+                            <Breadcrumb.Item>{props.data.labTitle}</Breadcrumb.Item>
+                        </>
+                    ) : (
+                        <Breadcrumb.Item>Informasi Alat Lab Tersedia</Breadcrumb.Item>
+                    )
+                }
             </Breadcrumb>
             <div className='d-flex justify-content-between align-items-center'>
                 <h2>Informasi Alat Lab Tersedia</h2>
@@ -79,46 +86,49 @@ const AlatLabTersedia = (props) => {
                 }
             </div>
             <div className="mt-2">
-                <Table striped>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Gambar</th>
-                            <th>Nama Alat</th>
-                            <th>Jumlah Tersedia</th>
-                            <th>Status</th>
-                            <th>No Seri</th>
-                            <th>Detail Alat</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            loading ? (<div>Loading</div>) : dataAlat == null ? (<span>Belum Ada ALat Di Lab Ini</span>) : 
-                            dataAlat.map((data, index) => {
-                                return (
-                                    <tr>
-                                        <td className='align-middle'>{index+1}</td>
-                                        <td className='align-middle'>
-                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
-                                        </td>
-                                        <td className='align-middle'>{data.NAMA}</td>
-                                        <td className='align-middle'>{data.JUMLAH_TERSEDIA}</td>
-                                        <td className='align-middle'>{data.STATUS_ALAT}</td>
-                                        <td className='align-middle'>{data.NOMOR_SERI}</td>
-                                        <td className='align-middle'>
-                                            <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
-                                        </td>
-                                    </tr>
-                                )
-                            })
-                        }
-                    </tbody>
-                </Table>
+                {
+                    loading ? (<div>Loading ...</div>) : dataAlat === null ? (<span>Belum Ada Alat Di Lab Ini</span>) : (
+                        <Table striped>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Gambar</th>
+                                    <th>Nama Alat</th>
+                                    <th>Jumlah</th>
+                                    <th>Status</th>
+                                    <th>Kondisi</th>
+                                    <th>Detail Alat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    dataAlat.map((data, index) => {
+                                        return (
+                                            <tr key={data.ID}>
+                                                <td className='align-middle'>{index+1}</td>
+                                                <td className='align-middle'>
+                                                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
+                                                </td>
+                                                <td className='align-middle'>{data.NAMA}</td>
+                                                <td className='align-middle'>{data.JUMLAH}</td>
+                                                <td className='align-middle'>{data.STATUS_ALAT}</td>
+                                                <td className='align-middle'>{data.KONDISI_ALAT}</td>
+                                                <td className='align-middle'>
+                                                    <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </Table>
+                    )
+                }
             </div>
 
             {/* modal detail alat */}
             <DetailAlatLab 
-                type="primary"
+                type={props.dataUser.NAMA_ROLE === "Teknisi Laboratorium" ? "primary" : "secondary"}
                 show={modalDetail.show} 
                 onHide={() => setModalDetail({...modalDetail, show: false})} 
                 data={{dataAlat: modalDetail.detailAlat, dataUser: props.dataUser, labID: props.data.labID}} 

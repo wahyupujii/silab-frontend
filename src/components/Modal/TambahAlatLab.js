@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 
 const TambahAlatLab = ({show, onHide, data, count}) => {
     const [inputs, setInputs] = useState({});
-
     const tambahAlatLab = (e) => {
         e.preventDefault();
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
@@ -16,7 +15,7 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
         formDataAlat.append('TYPE', inputs.type);
         formDataAlat.append('SPESIFIKASI', inputs.spesifikasi);
 
-        formDataAlat.append('JUMLAH', inputs.jumlah);
+        formDataAlat.append('JUMLAH', parseInt(inputs.jumlah));
         formDataAlat.append('TAHUN', inputs.tahun);
 
         if (inputs.hasOwnProperty("no_seri")) {
@@ -26,9 +25,9 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
         }
 
         formDataAlat.append('GAMBAR', inputs.gambar);
-        formDataAlat.append('TEKNISINOMOR', parseInt(data.dataUser.NOMOR));
-        formDataAlat.append('DATEKELOLA', today)
-        formDataAlat.append('LABID', parseInt(data.dataLab));
+        formDataAlat.append('TEKNISI_NOMOR', parseInt(data.dataUser.NOMOR));
+        formDataAlat.append('DATE_KELOLA', today)
+        formDataAlat.append('LAB_ID', parseInt(data.dataLab));
 
         axios({
             method: 'post',
@@ -40,8 +39,7 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
         }).then((result) => {
             onHide(false);
             count();
-            console.log("result", result)
-        }).catch((err) => {
+        }).catch(() => {
             Swal.fire({
                 icon: 'error',
                 title: "Gagal menambahkan data alat lab",
@@ -99,11 +97,11 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Jumlah Total</Form.Label>
+                        <Form.Label>Jumlah</Form.Label>
                         <Form.Control
                             name="jumlah"
                             type="number"
-                            placeholder='Jumlah Total'
+                            placeholder='Jumlah'
                             onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                             required={true}
                         />

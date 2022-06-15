@@ -61,7 +61,7 @@ const User = ({dataUser}) => {
                     <div>
                         {
                             window.location.pathname === "/mis105/SILAB/dashboard" ? (
-                                <LabArea jurusan={dataUser.JURUSAN_NOMOR} />
+                                <LabArea dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/pengajuan-alat" ? (
                                 <PengajuanAlat pegawaiNomor={dataUser.NOMOR} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/peminjaman-alat" ? (

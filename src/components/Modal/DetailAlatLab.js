@@ -78,18 +78,10 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Jumlah Total</Form.Label>
+                        <Form.Label>Jumlah</Form.Label>
                         <Form.Control
-                            type="jumlah_total"
-                            value={data.dataAlat.JUMLAH_TOTAL}
-                            readOnly
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Jumlah Tersedia</Form.Label>
-                        <Form.Control
-                            type="jumlah_tersedia"
-                            value={data.dataAlat.JUMLAH_TERSEDIA}
+                            type="jumlah"
+                            value={data.dataAlat.JUMLAH}
                             readOnly
                         />
                     </Form.Group>
@@ -98,6 +90,14 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                         <Form.Control
                             type="status_alat"
                             value={data.dataAlat.STATUS_ALAT}
+                            readOnly
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Kondisi Alat</Form.Label>
+                        <Form.Control
+                            type="kondisi_alat"
+                            value={data.dataAlat.KONDISI_ALAT}
                             readOnly
                         />
                     </Form.Group>
@@ -131,10 +131,6 @@ const DetailAlatLab = ({ type, show, onHide, data, count, editAlatLab }) => {
                             </Button>
                         </>
                     ) : type === "secondary" ? (
-                        <Button variant="danger" onClick={() => hapusAlatLab(data.dataAlat.ID)} >
-                                Hapus
-                        </Button>
-                    ) : type === "tertiary" ? (
                         <Button variant="secondary" onClick={() => onHide()} >
                             Close
                         </Button>

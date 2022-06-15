@@ -83,7 +83,7 @@ const DetailPengajuan = (props) => {
                                         <Card.Title className="mb-3">{data.NAMA}</Card.Title>
                                         <div className="d-flex flex-column">
                                             <span>Jumlah : {data.JUMLAH}</span>
-                                            <span className="text-danger">Catatan : {data.CATATAN}</span>
+                                            <span className="text-danger">Spesifikasi : {data.SPESIFIKASI}</span>
                                             <div className="d-flex justify-content-between">
                                                 <Button variant="primary" className="my-3">Lihat File</Button>
                                                 <Button variant="secondary" className="my-3" disabled>Edit</Button>

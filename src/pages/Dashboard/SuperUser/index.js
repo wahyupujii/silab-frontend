@@ -11,6 +11,8 @@ import LabArea from './LabArea';
 import PengajuanAlat from './PengajuanAlat';
 import PeminjamanAlat from "./PeminjamanAlat";
 import PerbaikanAlat from "./PerbaikanAlat";
+import Laboratorium from './Laboratorium';
+import PersetujuanPengajuan from './PersetujuanPengajuan';
 
 const SuperUser = ({dataUser}) => {
 	const [linkActive, setLinkActive] = useState(window.location.pathname);
@@ -35,11 +37,31 @@ const SuperUser = ({dataUser}) => {
                             <img src={Logo} alt="imageLogo" style={{ width: "60px", height: "auto" }} className="mx-2 " />
                         </span>
                     </li>
-                    <List icon={InformasiAlatIcon} title="Alat Lab Tersedia" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
-                    <List icon={PengajuanAlatIcon} title="Semua Alat Lab" path="/mis105/SILAB/dashboard/alat-diputihkan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/alat-diputihkan")} />
-                    <List icon={PengajuanAlatIcon} title="Pengajuan Alat" path="/mis105/SILAB/dashboard/pengajuan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pengajuan-alat")} />
-					<List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
-                    <List icon={PeminjamanAlatIcon} title="Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/perbaikan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/perbaikan-alat")} />
+                    {
+                        dataUser.NAMA_ROLE === "Teknisi Laboratorium" ? (
+                            <>
+                                <List icon={InformasiAlatIcon} title="Alat Lab Tersedia" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
+                                <List icon={PengajuanAlatIcon} title="Semua Alat Lab" path="/mis105/SILAB/dashboard/semua-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/semua-alat")} />
+                                <List icon={PengajuanAlatIcon} title="Laboratorium" path="/mis105/SILAB/dashboard/laboratorium" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/laboratorium")} />
+                                <List icon={PengajuanAlatIcon} title="Pengajuan Alat" path="/mis105/SILAB/dashboard/pengajuan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pengajuan-alat")} />
+                                <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
+                                <List icon={PeminjamanAlatIcon} title="Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/perbaikan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/perbaikan-alat")} />
+                            </>
+                        ) : dataUser.NAMA_ROLE === "Kepala Laboratorium" ? (
+                            <>
+                                <List icon={InformasiAlatIcon} title="Alat Lab Tersedia" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
+                                <List icon={PengajuanAlatIcon} title="Semua Alat Lab" path="/mis105/SILAB/dashboard/semua-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/semua-alat")} />
+                                <List icon={PengajuanAlatIcon} title="Persetujuan Pengajuan Alat" path="/mis105/SILAB/dashboard/persetujuan-pengajuan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-pengajuan")} />
+                                <List icon={PeminjamanAlatIcon} title="Persetujuan Peminjaman Alat" path="/mis105/SILAB/dashboard/persetujuan-peminjaman" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-peminjaman")} />
+                                <List icon={PeminjamanAlatIcon} title="Persetujuan Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/persetujuan-perbaikan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-perbaikan")} />
+                            </>
+                        ) : (
+                            <>  
+                            {/* kaprodi, kadep, asdir */}
+                                <List icon={PengajuanAlatIcon} title="Persetujuan Pengajuan Alat" path="/mis105/SILAB/dashboard/persetujuan-pengajuan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-pengajuan")} />
+                            </>
+                        )
+                    }
                 </ul>
             </div>
 
@@ -63,10 +85,14 @@ const SuperUser = ({dataUser}) => {
                         {
                             window.location.pathname === "/mis105/SILAB/dashboard" ? (
                                 <LabArea dataUser={dataUser} />
-                            ) : window.location.pathname === "/mis105/SILAB/dashboard/alat-diputihkan" ? (
+                            ) : window.location.pathname === "/mis105/SILAB/dashboard/semua-alat" ? (
 								<LabArea dataUser={dataUser} />
-							) : window.location.pathname === "/mis105/SILAB/dashboard/pengajuan-alat" ? (
+							) : window.location.pathname === "/mis105/SILAB/dashboard/laboratorium" ? (
+                                <Laboratorium dataUser={dataUser} />
+                            ) : window.location.pathname === "/mis105/SILAB/dashboard/pengajuan-alat" ? (
                                 <PengajuanAlat dataUser={dataUser} />
+                            ) : window.location.pathname === "/mis105/SILAB/dashboard/persetujuan-pengajuan" ? (
+                                <PersetujuanPengajuan dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/peminjaman-alat" ? (
                                 <PeminjamanAlat nomorPegawai={dataUser.NOMOR} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/perbaikan-alat" ? (

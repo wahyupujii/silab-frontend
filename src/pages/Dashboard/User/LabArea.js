@@ -3,27 +3,28 @@ import {Card, Button, Breadcrumb} from "react-bootstrap"
 import AlatLab from './AlatLab'
 import axios from 'axios'
 
-const LabArea = ({jurusan}) => {
-    const [labArea, setLabArea] = useState(null);
+const LabArea = ({dataUser}) => {
     const [loading,setLoading] = useState(true);
-    const [alatLab, setAlatLab] = useState({show: false, labID: "", labTitle: ""});
+    const [alatLab, setAlatLab] = useState({show: false, labID: ""});
     useEffect(() => {
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/laboratory.php?function=getLabByJurusan',
-            data: {jurusan: jurusan},
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/laboratory.php?function=getLabByDosen',
+            data: {pegawai_nomor: dataUser.NOMOR},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(result => {
-            setLabArea(result.data.data);
-            localStorage.setItem("labByJurusan", JSON.stringify(result.data.data));
+            setAlatLab({...alatLab, show: true, labID: result.data.data.LABORATORIUM_ID});
             setLoading(false)
-        }).catch()
-    }, [jurusan])
+        }).catch(() => {
+            setAlatLab({...alatLab, show: true, labID: null});
+            setLoading(false)
+        })
+    }, [])
     return (
         <>
-            {
+            {/* {
                 loading ? (<div>loading...</div>) : (
                     alatLab.show === false ? (
                         <div className='w-100 p-3'>
@@ -52,6 +53,11 @@ const LabArea = ({jurusan}) => {
                             </div>
                         </div>
                     ) : ( <AlatLab handleBack={(value) => setAlatLab({...alatLab, show: value})} data={{labID: alatLab.labID, labTitle: alatLab.labTitle}} /> )
+                )
+            } */}
+            {
+                loading ? (<div>loading ... </div>) : (
+                    <AlatLab handleBack={(value) => setAlatLab({...alatLab, show: value})} data={{labID: alatLab.labID}} />
                 )
             }
         </>

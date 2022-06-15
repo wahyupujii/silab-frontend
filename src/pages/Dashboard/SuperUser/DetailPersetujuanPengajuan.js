@@ -1,18 +1,19 @@
 import React, {useEffect, useState} from 'react'
-import { Card, Button } from 'react-bootstrap';
+import { Card, Button, Modal, Image } from 'react-bootstrap';
 import axios from "axios";
 import Swal from "sweetalert2";
 
 const DetailPersetujuanPengajuan = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [modalFile, setModalFile] = useState({show: "", data: ""})
+    
     useEffect(() => {
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=detailPengajuan',
             data: {
-                pengajuanID: props.data.dataID
+                pengajuanID: props.data.detail.ID
             },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -23,7 +24,7 @@ const DetailPersetujuanPengajuan = (props) => {
         }).catch((err) => {
             console.error(err)
         })
-    },[])
+    }, data)
 
     const setuju = () => {
         const opsiSetuju = ["Menunggu ACC KaProdi", "Menunggu ACC KaDep", "Menunggu ACC AsDir2", "Dilakukan Pengadaan"];
@@ -47,7 +48,7 @@ const DetailPersetujuanPengajuan = (props) => {
                     url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPengajuan.php?function=setujuiPengajuan',
                     data: {
                         pegawai_nomor: props.data.dataUser.NOMOR,
-                        pengajuan_id: props.data.dataID,
+                        pengajuan_id: props.data.detail.ID,
                         tanggal_persetujuan: today,
                         set_status: setuju
                     },
@@ -59,7 +60,11 @@ const DetailPersetujuanPengajuan = (props) => {
                         icon: 'success',
                         title: 'Berhasil Menyetujui Pengajuan',
                         text: 'Pengajuan Akan Diteruskan ke Proses Selanjutnya',
-                    }).then(() => window.location.pathname = '/mis105/SILAB/dashboard/pengajuan-alat')
+                    }).then(() => {
+                        // window.location.pathname = '/mis105/SILAB/dashboard/persetujuan-pengajuan';
+                        props.count();
+                        props.handleBack();
+                    })
                 }).catch(err => {
                     Swal.fire({
                         icon: 'error',
@@ -97,7 +102,10 @@ const DetailPersetujuanPengajuan = (props) => {
                         icon: 'success',
                         title: 'Berhasil Tidak Menyetujui Pengajuan',
                         text: 'Pengajuan Akan Dikembalikan ke Yang Mengajukan',
-                    }).then(() => window.location.pathname = '/mis105/SILAB/dashboard/pengajuan-alat')
+                    }).then(() => {
+                        props.count();
+                        props.handleBack();
+                    })
                 }).catch(err => {
                     Swal.fire({
                         icon: 'error',
@@ -107,11 +115,18 @@ const DetailPersetujuanPengajuan = (props) => {
             }
         }).catch(err => {console.error(err)})
     }
+
+    const showFile = (file) => {
+        let ekstensi = file.split(".")[1];
+        if (ekstensi === "jpg") { 
+            setModalFile({...modalFile, show: "jpg", data: file})
+        }
+    }
     
     return (
-        <div className='w-100 p-3'>
+        <div className='w-100'>
             <div className="d-flex align-items-center">
-                <h2 className="mx-3">{props.data.dataTitle}</h2>
+                <h2 className="mx-3">{props.data.detail.NAMA_PENGAJUAN}</h2>
             </div>
             <div className='d-flex align-items-center mt-3'>
                 <span className='mx-3'>Setujui : </span>
@@ -129,9 +144,9 @@ const DetailPersetujuanPengajuan = (props) => {
                                         <Card.Title className="mb-3">{data.NAMA}</Card.Title>
                                         <div className="d-flex flex-column">
                                             <span>Jumlah : {data.JUMLAH}</span>
-                                            <span className="text-danger">Catatan : {data.CATATAN}</span>
+                                            <span className="text-secondary">Spesifikasi : {data.SPESIFIKASI}</span>
                                         </div>
-                                        <Button className="primary mt-3" disabled>Lihat File</Button>
+                                        <Button className="primary mt-3" onClick={() => showFile(data.UPLOAD_FILE)}>Lihat File</Button>
                                     </Card.Body>
                                 </Card>
                             )
@@ -139,6 +154,18 @@ const DetailPersetujuanPengajuan = (props) => {
                     )
                 }
             </div>
+
+            {/* modal show file jpg */}
+            <Modal
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                show={modalFile.show === "jpg" ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
+                centered
+            >
+                <Modal.Body>
+                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} fluid />
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }

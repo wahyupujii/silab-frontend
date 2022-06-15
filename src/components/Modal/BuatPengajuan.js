@@ -2,10 +2,15 @@ import React, {useState} from 'react'
 import {Modal, Form, Button} from "react-bootstrap"
 import axios from "axios";
 
-const BuatPengajuan = ({ show, onHide, data, count }) => {
+const BuatPengajuan = ({ show, onHide, dataUser, count }) => {
     const [inputs, setInputs] = useState({});
 
-    const dataLab = JSON.parse(localStorage.getItem("labByJurusan"));
+    let dataLab;
+    if (dataUser.NAMA_ROLE === "Teknisi Laboratorium") {
+        dataLab = JSON.parse(localStorage.getItem("labByTeklab"));
+    } else if (dataUser.NAMA_ROLE === "Kepala Laboratorium") {
+        dataLab = JSON.parse(localStorage.getItem("labByKalab"));
+    }
 
     const createPengajuan = (e) => { 
         e.preventDefault();
@@ -17,7 +22,7 @@ const BuatPengajuan = ({ show, onHide, data, count }) => {
                 data: {
                     ...inputs,
                     status: "Menunggu ACC KaLab",
-                    pegawai_nomor: data.pegawaiNomor,
+                    pegawai_nomor: dataUser.NOMOR,
                 },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'

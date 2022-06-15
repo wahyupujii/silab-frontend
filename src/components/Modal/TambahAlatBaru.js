@@ -4,16 +4,26 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const TambahAlatBaru = ({ show, onHide, count, data }) => {
-    const [inputs, setInputs] = useState({})
+    const [inputs, setInputs] = useState({
+        harga_satuan: 0,  // 1000000
+        jumlah: 0,
+        total_harga: 0,
+    })
+
+    const [harga, setHarga] = useState({
+        hargaSatuan: "",  // Rp. 1.000.000
+        totalHarga: ""
+    })
 
     const tambahAlat = (e) => {
         e.preventDefault();
 
         let formDataAlat = new FormData();
         formDataAlat.append('NAMA', inputs.nama);
+        formDataAlat.append('SPESIFIKASI', inputs.spesifikasi);
+        formDataAlat.append('HARGA_SATUAN', inputs.harga_satuan);
         formDataAlat.append('JUMLAH', inputs.jumlah);
-        formDataAlat.append('CATATAN', inputs.catatan);
-        formDataAlat.append('HARGA', inputs.harga);
+        formDataAlat.append('TOTAL_HARGA', inputs.total_harga);
         formDataAlat.append('FILE', inputs.file);
         formDataAlat.append('PENGAJUAN_ID', data.pengajuanID)
 
@@ -27,6 +37,7 @@ const TambahAlatBaru = ({ show, onHide, count, data }) => {
         }).then(() => {
             onHide(false);
             count();
+            setHarga({...harga, hargaSatuan: "", totalHarga: ""});
         }).catch(() => {
             Swal.fire({
                 icon: 'error',
@@ -35,6 +46,41 @@ const TambahAlatBaru = ({ show, onHide, count, data }) => {
             })
             formDataAlat.delete("FILE");
         })        
+    }
+
+    const formatRupiah = (angka, prefix, target) => {
+        let separator;
+        let number_string = angka.replace(/[^,\d]/g, '').toString(),
+        split   		= number_string.split(','),
+        sisa     		= split[0].length % 3,
+        rupiah     		= split[0].substr(0, sisa),
+        ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
+
+        // tambahkan titik jika yang di input sudah menjadi angka ribuan
+        if(ribuan){
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        if (target === "harga_satuan") {
+            setHarga({...harga, hargaSatuan: prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '')});
+            setInputs({...inputs, harga_satuan: parseInt(number_string)})
+        } else if (target === "total_harga") {
+            setHarga({...harga, totalHarga: prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '')})
+        }
+    }
+
+    const setHargaTotal = (e) => {
+        // pakai variabel baru karena saat di setInputs ke total_harga, ada delay,
+        // sehingga meskipun sudah di setInput, tapi saat ditampilkan masih kosong
+        let totalHarga = parseInt(e.target.value) * inputs.harga_satuan
+        setInputs({
+            ...inputs, 
+            jumlah: parseInt(e.target.value),
+            total_harga: totalHarga
+        });
+        formatRupiah(totalHarga.toString(), "Rp. ", "total_harga");
     }
 
     return (
@@ -54,38 +100,49 @@ const TambahAlatBaru = ({ show, onHide, count, data }) => {
                             required={true}
                         />
                     </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Jumlah</Form.Label>
-                        <Form.Control
-                            type="number"
-                            placeholder="Jumlah"
-                            name="jumlah"
-                            onChange={(e) => setInputs({...inputs, [e.target.name]: parseInt(e.target.value)})}
-                            required={true}
-                        />
-                    </Form.Group>
                     <Form.Group
                         className="mb-3"
                         controlId="exampleForm.ControlTextarea1"
                     >
-                        <Form.Label>Catatan</Form.Label>
+                        <Form.Label>Spesifikasi</Form.Label>
                         <Form.Control 
                             as="textarea" 
                             rows={3} 
-                            placeholder="Catatan" 
-                            name="catatan" 
+                            placeholder="Spesifikasi" 
+                            name="spesifikasi" 
                             onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})} 
                             required={true}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Estimasi Harga</Form.Label>
+                        <Form.Label>Harga Satuan</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Harga"
-                            name="harga"
-                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                            placeholder="Harga Satuan"
+                            name="harga_satuan"
+                            value={harga.hargaSatuan === "" ? "" : harga.hargaSatuan}
+                            onChange={(e) => formatRupiah(e.target.value, "Rp. ", "harga_satuan")}
                             required={true}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Jumlah</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Jumlah"
+                            name="jumlah"
+                            onChange={(e) => setHargaTotal(e)}
+                            required={true}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Estimasi Total Harga</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Estimasi Total Harga"
+                            name="total_harga"
+                            value={harga.totalHarga === "" ? "" : harga.totalHarga}
+                            readOnly
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
