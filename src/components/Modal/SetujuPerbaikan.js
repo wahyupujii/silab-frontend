@@ -1,0 +1,132 @@
+import React, {useState, useEffect} from 'react'
+import {Modal, Button, Form, Table} from "react-bootstrap";
+import axios from 'axios';
+import Swal from "sweetalert2";
+
+const SetujuPerbaikan = ({show, onHide, data, count}) => {
+    const [alatPerbaikan, setAlatPerbaikan] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        if (show) {
+            axios({
+                method: 'post',
+                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPerbaikan.php?function=getAlatByNamaPerbaikan',
+                data: { 
+                    nama_perbaikan: data.NAMA
+                 },
+                headers: {
+                    'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                }
+            }).then(result => {
+                setAlatPerbaikan(result.data.data);
+                setLoading(false)
+            }).catch(() => {
+                // swal
+                setAlatPerbaikan(null);
+                setLoading(false)
+            })
+        }
+    }, [show])
+
+    const setujuiPerbaikan = () => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPerbaikan.php?function=setujuiPerbaikan',
+            data: { 
+                nama_perbaikan: data.NAMA
+             },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(() => {
+            count();
+            onHide();
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menyetujui Pengajuan Perbaikan'
+            })
+        })
+    }
+
+    const tolakPerbaikan = () => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPerbaikan.php?function=tolakPerbaikan',
+            data: { 
+                nama_perbaikan: data.NAMA
+             },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(() => {
+            count();
+            onHide();
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menolak Pengajuan Perbaikan'
+            })
+        })
+    }
+
+    return (
+        <>
+            <Modal
+                show={show}
+                onHide={() => onHide()}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Detail Perbaikan</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group className='mb-3'>
+                        <Form.Label>Nama Perbaikan</Form.Label>
+                        <Form.Control
+                            value={data.NAMA}
+                            readOnly
+                        ></Form.Control>
+                    </Form.Group>
+                    <Form.Group className='mb-3'>
+                        <Form.Label>Daftar Alat</Form.Label>
+                        {
+                            loading ? (<div>Loading ... </div>) : alatPerbaikan === null ? (<span>Belum ada alat yang diperbaiki</span>) : (
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama Alat</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            alatPerbaikan.map((alat, index) => {
+                                                return (
+                                                    <tr>
+                                                        <td>{index+1}</td>
+                                                        <td>{alat.NAMA}</td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                </Table>
+                            )
+                        }
+                    </Form.Group>
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={() => tolakPerbaikan()}>Tolak Perbaikan</Button>
+                    <Button variant="success" onClick={() => setujuiPerbaikan()}>Setuju Perbaikan</Button>
+                    <Button variant="primary" onClick={() => onHide()}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    )
+}
+
+export default SetujuPerbaikan

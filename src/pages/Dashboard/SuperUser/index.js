@@ -1,8 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Link} from "react-router-dom";
 import style from "../Dashboard.module.css";
 import Logo from "../../../assets/logo pens.png";
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+
+import {useRouteMatch} from "react-router-dom"
 
 import { InformasiAlatIcon, PengajuanAlatIcon, PeminjamanAlatIcon } from '../../../components';
 
@@ -13,6 +15,8 @@ import PeminjamanAlat from "./PeminjamanAlat";
 import PerbaikanAlat from "./PerbaikanAlat";
 import Laboratorium from './Laboratorium';
 import PersetujuanPengajuan from './PersetujuanPengajuan';
+import PemindahanAlat from './PemindahanAlat';
+import PersetujuanPerbaikan from "./PersetujuanPerbaikan";
 
 const SuperUser = ({dataUser}) => {
 	const [linkActive, setLinkActive] = useState(window.location.pathname);
@@ -46,13 +50,14 @@ const SuperUser = ({dataUser}) => {
                                 <List icon={PengajuanAlatIcon} title="Pengajuan Alat" path="/mis105/SILAB/dashboard/pengajuan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pengajuan-alat")} />
                                 <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                                 <List icon={PeminjamanAlatIcon} title="Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/perbaikan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/perbaikan-alat")} />
+                                <List icon={PeminjamanAlatIcon} title="Pemindahan Alat" path="/mis105/SILAB/dashboard/pemindahan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pemindahan-alat")} />
                             </>
                         ) : dataUser.NAMA_ROLE === "Kepala Laboratorium" ? (
                             <>
                                 <List icon={InformasiAlatIcon} title="Alat Lab Tersedia" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
                                 <List icon={PengajuanAlatIcon} title="Semua Alat Lab" path="/mis105/SILAB/dashboard/semua-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/semua-alat")} />
                                 <List icon={PengajuanAlatIcon} title="Persetujuan Pengajuan Alat" path="/mis105/SILAB/dashboard/persetujuan-pengajuan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-pengajuan")} />
-                                <List icon={PeminjamanAlatIcon} title="Persetujuan Peminjaman Alat" path="/mis105/SILAB/dashboard/persetujuan-peminjaman" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-peminjaman")} />
+                                <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                                 <List icon={PeminjamanAlatIcon} title="Persetujuan Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/persetujuan-perbaikan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-perbaikan")} />
                             </>
                         ) : (
@@ -73,7 +78,7 @@ const SuperUser = ({dataUser}) => {
                     <div className={`d-flex h-100 ${style.custom_container}`}>
                         <div className="account d-flex align-items-center w-100 justify-content-end">
                         <DropdownButton id="dropdown-basic-button" title={dataUser.NAMA}>
-                            <Dropdown.Item href="/mis105/SILAB" onClick={() => localStorage.removeItem("dataUser")}>Log Out</Dropdown.Item>
+                            <Dropdown.Item href="/mis105/SILAB" onClick={() => sessionStorage.removeItem("superUser")}>Log Out</Dropdown.Item>
                         </DropdownButton>
                         </div>
                     </div>
@@ -94,9 +99,13 @@ const SuperUser = ({dataUser}) => {
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/persetujuan-pengajuan" ? (
                                 <PersetujuanPengajuan dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/peminjaman-alat" ? (
-                                <PeminjamanAlat nomorPegawai={dataUser.NOMOR} />
+                                <PeminjamanAlat dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/perbaikan-alat" ? (
-                                <PerbaikanAlat />
+                                <PerbaikanAlat dataUser={dataUser} />
+                            ) : window.location.pathname === "/mis105/SILAB/dashboard/pemindahan-alat" ? (
+                                <PemindahanAlat dataUser={dataUser} />
+                            ) : window.location.pathname === "/mis105/SILAB/dashboard/persetujuan-perbaikan" ? (
+                                <PersetujuanPerbaikan dataUser={dataUser} />
                             ) : <div className="d-flex justify-content-center align-items-center">404 Not Found</div>
                         }
                     </div>

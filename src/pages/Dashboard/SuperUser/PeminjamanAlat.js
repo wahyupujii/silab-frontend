@@ -1,171 +1,233 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Modal, Form, Table} from "react-bootstrap"
-import DetailPeminjaman from './DetailPeminjaman'
+import {Breadcrumb, Button, Table, Badge} from "react-bootstrap"
 import axios from "axios"
-// import Swal from "sweetalert2";
 
-const PeminjamanAlat = ({nomorPegawai}) => {
-    // state untuk pengaturan component modal
-    const [showPinjam, setShowPinjam] = useState(false)
-    const [showDetail, setShowDetail] = useState(false)
+// component
+import { PinjamAlat, SetujuPeminjaman, DetailPeminjaman } from '../../../components'
+
+const PeminjamanAlat = ({dataUser}) => {    
+    const [content, setContent] = useState("");
+    const dataLab = JSON.parse(localStorage.getItem("labByKalab"));
+    return (
+        <>
+            <div className='w-100 p-3'>
+                <Breadcrumb>
+                    <Breadcrumb.Item href="#">Dashboard</Breadcrumb.Item>
+                    <Breadcrumb.Item>Peminjaman Alat Lab</Breadcrumb.Item>
+                </Breadcrumb>
+
+                <div className='d-flex'>
+                    {
+                        dataUser.NAMA_ROLE === "Kepala Laboratorium" ? (
+                            <>
+                                <Button variant="outline-secondary" onClick={() => setContent("persetujuan")}>Persetujuan Peminjaman</Button>
+                                <Button variant="outline-secondary mx-2" onClick={() => setContent("peminjaman")}>Riwayat Peminjaman</Button>
+                            </>
+                        ) : (<div></div>)
+                    }
+                </div>
+                <div className='px-4 py-3 mt-2' style={{maxWidth: '100%', background: 'white'}}>
+                    {
+                        dataUser.NAMA_ROLE === "Kepala Laboratorium" ? (
+                            content === "peminjaman" ? (
+                                <RiwayatPeminjaman dataUser={dataUser} />
+                            ) : content === "persetujuan" ? (
+                                <PersetujuanPeminjaman dataUser={dataUser} labID={dataLab[0].ID} />
+                            ) : <div>Silahkan Pilih Menu Diatas</div>
+                        ) : (
+                            <RiwayatPeminjaman dataUser={dataUser} />
+                        )
+                    }
+                </div>
+            </div>
+        </>
+    )
+}
+
+const RiwayatPeminjaman = ({dataUser}) => {
+    // modal pinjam alat
+    const [modal, setModal] = useState(false);
     
-    const [detailPeminjaman, setDetailPeminjaman] = useState(false)
-    const [dataPeminjaman, setDataPeminjaman] = useState(null);
-    // const [dataCount, setDataCount] = useState(0);
-    const [loading, setLoading] = useState(true);
+    // modal detail peminjaman
+    const [detailPeminjaman, setDetailPeminjaman] = useState({show: false, data: ""})
 
-    useEffect(() => {
+    const [dataPeminjaman, setDataPeminjaman] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [dataCount, setDataCount] = useState(0);
+
+    useEffect (() => {
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=getAllPeminjaman',
-            data: {nomorPegawai: nomorPegawai},
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=getPeminjamanByNomorPegawai',
+            data: {nomorPegawai: parseInt(dataUser.NOMOR)},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(result => {
             setDataPeminjaman(result.data.data);
-            // setDataCount(result.data.data.length);
+            setDataCount(result.data.data.length);
             setLoading(false);
         }).catch(() => {
             setDataPeminjaman(null);
             setLoading(false);
         })
-    }, [nomorPegawai]);
+    }, [dataCount])
 
     return (
         <>
-            {
-                detailPeminjaman === false ? (
-                    <div className='w-100 p-3'>
-                        <Breadcrumb>
-                            <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
-                            <Breadcrumb.Item>Peminjaman Alat Lab</Breadcrumb.Item>
-                        </Breadcrumb>
-                        <div className="d-flex justify-content-between">
-                            <h2>Riwayat Peminjaman Alat</h2>
-                            <Button variant="primary" onClick={() => setShowPinjam(true)}>Buat Peminjaman</Button>
-                        </div>
-                        <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
-                            {
-                                loading ? (<div>loading...</div>) : dataPeminjaman == null ? (<div>Belum ada Peminjaman Alat</div>) : 
-                                dataPeminjaman.map((data) => {
-                                    return (
-                                        <Card className="my-3" style={{width: '18rem'}} key={data.ID}>
-                                            <Card.Body>
-                                                <Card.Title className="mb-3">{data.NAMA_PEMINJAMAN}</Card.Title>
-                                                <div className="d-flex flex-column">
-                                                    <span style={{fontSize: '12px'}}>Tanggal Pinjam :  {data.TANGGAL_PINJAM}</span>
-                                                    <span style={{fontSize: '12px'}}>Tanggal Kembali : {data.TANGGAL_KEMBALI}</span>
-                                                    <Button variant="outline-primary" className="my-3" onClick={() => setDetailPeminjaman(!detailPeminjaman)}>Tambah Alat</Button>
-                                                </div>
-                                            </Card.Body>
-                                        </Card>
-                                    )
-                                })
-                            }
-                            
-                            {/* contoh button detail peminjaman */}
-                            {/* <Card className="my-3" style={{width: '18rem'}}>
-                                <Card.Body>
-                                    <Card.Title className="mb-3">Peminjaman Laptop Lenovo</Card.Title>
-                                    <div className="d-flex flex-column">
-                                        <span>Tanggal :  </span>
-                                        <span>30/5/2022</span>
-                                        <Button variant="outline-primary" className="my-3" onClick={() => setShowDetail(true)}>Detail</Button>
-                                    </div>
-                                </Card.Body>
-                            </Card> */}
-                        </div>
+            <div>
+                <div className="d-flex justify-content-between align-items-center">
+                    <h1>Riwayat Peminjaman Alat</h1>
+                    <Button onClick={() => setModal(true)}>Buat Peminjaman</Button>
+                </div>
+                <div>
+                    {
+                        loading ? (<div>Loading ... </div>) : (
+                            dataPeminjaman === null ? (<span>Belum ada Peminjaman Alat</span>) : (
+                                <Table striped>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama Peminjaman</th>
+                                            <th>Tanggal Pinjam</th>
+                                            <th>Tanggal Kembali</th>
+                                            <th>Status</th>
+                                            <th>Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            dataPeminjaman.map((data, index) => {
+                                                let status = data.STATUS === 'Ditolak KaLab' ? 'danger' : data.STATUS === 'Disetujui KaLab' ? 'success' : 'primary';
+                                                return (
+                                                    <tr key={data.ID}>
+                                                        <td className='align-middle'>{index+1}</td>
+                                                        <td className='align-middle'>{data.NAMA_PEMINJAMAN}</td>
+                                                        <td className='align-middle'>{data.TANGGAL_PINJAM}</td>
+                                                        <td className='align-middle'>{data.TANGGAL_KEMBALI}</td>
+                                                        <td className={`${status} align-middle`}>
+                                                            <Badge bg={status}>{data.STATUS}</Badge>{' '}    
+                                                        </td>
+                                                        <td className='align-middle'>
+                                                            <Button 
+                                                                variant="primary"
+                                                                onClick={() => setDetailPeminjaman({show: true, data: data.NAMA_PEMINJAMAN})}
+                                                            >Detail</Button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                </Table>
+                            )
+                        )
+                    }
+                </div>
 
-                        {/* modal tambah pinjam alat */}
-                        <Modal show={showPinjam} onHide={() => setShowPinjam(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Form Peminjaman Alat</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Nama Peminjaman</Form.Label>
-                                        <Form.Control
-                                            type="name"
-                                            placeholder='nama peminjaman'
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tanggal Pinjam</Form.Label>
-                                        <Form.Control
-                                            type="date"
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tanggal Kembali</Form.Label>
-                                        <Form.Control
-                                            type="date"
-                                        />
-                                    </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="primary">
-                                    Buat Peminjaman
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+                {/* modal Pinjam Alat */}
+                <PinjamAlat 
+                    show={modal}
+                    onHide={() => setModal(false)}
+                    count={() => setDataCount(dataCount+1)}
+                    dataUser={dataUser}
+                />
 
-                        {/* modal detail peminjaman */}
-                        <Modal show={showDetail} onHide={() => setShowDetail(false)}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Detail Peminjaman Alat</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Form>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Nama Peminjaman</Form.Label>
-                                        <Form.Control
-                                            type="name"
-                                            value='Peminjaman Laptop Lenovo'
-                                            readOnly
-                                        />
-                                        <Table striped bordered hover variant="dark" className='mt-4'>
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Nama Alat</th>
-                                                    <th>Jumlah</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Alat 1</td>
-                                                    <td>1</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>Alat 2</td>
-                                                    <td>2</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td>Alat 3</td>
-                                                    <td>3</td>
-                                                </tr>
-                                            </tbody>
-                                        </Table>
-                                    </Form.Group>
-                                </Form>
-                            </Modal.Body>
-                            {/* <Modal.Footer>
-                                <Button variant="primary">
-                                    Buat Peminjaman
-                                </Button>
-                            </Modal.Footer> */}
-                        </Modal>
-                    </div>      
-                ) : (
-                    <DetailPeminjaman handleBack={(value) => setDetailPeminjaman(value)} />
-                )
+                {/* modal detail peminjaman */}
+                <DetailPeminjaman 
+                    show={detailPeminjaman.show}
+                    onHide={() => setDetailPeminjaman({...detailPeminjaman, show: false})}
+                    data={detailPeminjaman.data}
+                />
+            </div>
+        </>
+    )
+}
+
+const PersetujuanPeminjaman = ({dataUser, labID}) => {
+    const [modalDetail, setModalDetail] = useState({show: false, data: {}});
+    const [dataPersetujuan, setDataPersetujuan] = useState([]);
+    const [dataCount, setDataCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=getPersetujuanByLab',
+            data: {
+                kalab_nomor: parseInt(dataUser.NOMOR),
+                laboratorium_id: parseInt(labID)
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
+        }).then(result => {
+            setDataPersetujuan(result.data.data);
+            setDataCount(result.data.data.length);
+            setLoading(false);
+        }).catch(() => {
+            setDataPersetujuan(null);
+            setLoading(false);
+        })
+    }, [dataCount])
+
+    return (
+        <>
+            <div>
+                <div className="d-flex justify-content-between align-items-center">
+                    <h1>Persetujuan Peminjaman Alat</h1>
+                </div>
+                <div>
+                    {
+                        loading ? (<div>Loading ... </div>) : (
+                            dataPersetujuan === null ? (<span>Belum ada Pengajuan Peminjaman Alat</span>) : (
+                                <Table striped>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nama Peminjaman</th>
+                                            <th>Peminjam</th>
+                                            <th>Status</th>
+                                            <th>Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            dataPersetujuan.map((data, index) => {
+                                                let status = data.STATUS === 'Disetujui KaLab' ? 'success' : data.STATUS === 'Ditolak KaLab' ? 'danger' : 'primary'
+                                                return (
+                                                    <tr>
+                                                        <td className='align-middle'>{index+1}</td>
+                                                        <td className='align-middle'>{data.NAMA_PEMINJAMAN}</td>
+                                                        <td className='align-middle'>{data.PEMINJAM}</td>
+                                                        <td className='align-middle'>
+                                                            <Badge bg={status}>{data.STATUS}</Badge>{' '}    
+                                                        </td>
+                                                        <td className='align-middle'>
+                                                            <Button 
+                                                                variant="primary"
+                                                                onClick={() => setModalDetail({...modalDetail, show: true, data: data})}
+                                                            >Detail</Button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
+                                    </tbody>
+                                </Table>
+                            )
+                        )
+                    }
+                </div>
+
+                <SetujuPeminjaman 
+                    show={modalDetail.show}
+                    onHide={() => setModalDetail({...modalDetail, show: false})}
+                    data={modalDetail.data}
+                    count={() => setDataCount(dataCount-1)}
+                />
+
+            </div>
         </>
     )
 }

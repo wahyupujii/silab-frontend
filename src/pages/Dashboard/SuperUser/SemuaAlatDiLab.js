@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Breadcrumb, Card, Button, Dropdown, Table, Image} from 'react-bootstrap'
+import { Breadcrumb, Card, Button, Dropdown, Table, Image, Badge} from 'react-bootstrap'
 import axios from "axios";
 
 // component
@@ -77,6 +77,8 @@ const SemuaAlatDiLab = (props) => {
                             <tbody>
                                 {
                                     dataAlat.map((data, index) => {
+                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'info' : 'primary';
+                                        let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
                                         return (
                                             <tr key={data.ID}>
                                                 <td className='align-middle'>{index+1}</td>
@@ -85,8 +87,12 @@ const SemuaAlatDiLab = (props) => {
                                                 </td>
                                                 <td className='align-middle'>{data.NAMA}</td>
                                                 <td className='align-middle'>{data.JUMLAH}</td>
-                                                <td className='align-middle'>{data.STATUS_ALAT}</td>
-                                                <td className='align-middle'>{data.KONDISI_ALAT}</td>
+                                                <td className='align-middle'>
+                                                    <Badge bg={status}>{data.STATUS_ALAT}</Badge>{' '}
+                                                </td>
+                                                <td className='align-middle'>
+                                                    <Badge bg={kondisi}>{data.KONDISI_ALAT}</Badge>{' '}
+                                                </td>
                                                 <td className='align-middle'>
                                                     <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>
                                                 </td>

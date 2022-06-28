@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from "axios";
-import { Table, Button, Breadcrumb } from 'react-bootstrap';
+import { Table, Button, Breadcrumb, Badge } from 'react-bootstrap';
 
 import DetailPersetujuanPengajuan from './DetailPersetujuanPengajuan';
 
@@ -74,7 +74,7 @@ const PersetujuanPengajuan = ({dataUser}) => {
                 method: 'post',
                 url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=getPengajuanByLabID',
                 data: {
-                    laboratorium_id: result.data.data.ID,
+                    laboratorium_id: result.data.data[0].ID,
                 },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -124,12 +124,15 @@ const PersetujuanPengajuan = ({dataUser}) => {
                                     <tbody>
                                         {
                                             dataPengajuan.map((item, index) => {
+                                                let status = item.STATUS === 'Pengajuan Ditolak' ? 'danger' : item.STATUS === 'Dilakukan Pengadaan' ? 'success' : 'primary';
                                                 return (
                                                     <tr key={item.ID}>
                                                         <td className="align-middle">{++index}</td>
                                                         <td className="align-middle">{item.NAMA_PEGAWAI}</td>
                                                         <td className="align-middle">{item.NAMA_PENGAJUAN}</td>
-                                                        <td className='text-primary align-middle'>{item.STATUS}</td>
+                                                        <td className='align-middle'>
+                                                            <Badge bg={status}>{item.STATUS}</Badge>{' '}
+                                                        </td>
                                                         <td md className="align-middle">
                                                             <Button variant="outline-primary" onClick={() => setShowDetail({show: true, detail: item})}>Detail</Button>
                                                         </td>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Form, Table, Image} from "react-bootstrap"
+import {Breadcrumb, Card, Button, Form, Table, Image, Badge} from "react-bootstrap"
 import axios from "axios";
 import Swal from 'sweetalert2';
 import { DetailAlatLab, EditAlatLab, TambahAlatLab } from '../../../components/Modal';
@@ -7,43 +7,9 @@ import { DetailAlatLab, EditAlatLab, TambahAlatLab } from '../../../components/M
 const AlatLabTersedia = (props) => {
     const [modalDetail, setModalDetail] = useState({show: false, detailAlat: ""});
     const [modalTambahAlat, setModalTambah] = useState(false)
-    const [modalEdit, setModalEdit] = useState(false)
     const [dataAlat, setDataAlat] = useState(null);
     const [loading, setLoading] = useState(null);
     const [dataCount, setDataCount] = useState(0);
-
-    const putihkanAlat = (id) => {
-        Swal.fire({
-            icon: 'question',
-            title: 'Anda yakin ingin MEMUTIHKAN ALAT ini ? ',
-            showDenyButton: true,
-            confirmButtonText: 'Ya saya yakin',
-            denyButtonText: 'Tidak jadi'
-        }).then(response => {
-            if (response.isConfirmed) {
-                axios({
-                    method: 'post',
-                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=putihkanAlat',
-                    data: {alatLabID: id, teknisiKelolaNomor: parseInt(props.dataUser.NOMOR), labID: parseInt(props.data.labID)},
-                    headers: {
-                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-                    }
-                }).then((result) => {
-                    setDataCount(dataCount-1);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil Memutihkan Alat Lab',
-                    })
-                }).catch(() => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: "Gagal memutihkan alat lab",
-                        text: 'Terdapat kesalahan / anda bukan teknisi dari lab ini'
-                    })
-                })
-            }
-        })
-    }
 
     useEffect(() => {
         axios({
@@ -103,6 +69,8 @@ const AlatLabTersedia = (props) => {
                             <tbody>
                                 {
                                     dataAlat.map((data, index) => {
+                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'info' : 'primary';
+                                        let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
                                         return (
                                             <tr key={data.ID}>
                                                 <td className='align-middle'>{index+1}</td>
@@ -111,8 +79,12 @@ const AlatLabTersedia = (props) => {
                                                 </td>
                                                 <td className='align-middle'>{data.NAMA}</td>
                                                 <td className='align-middle'>{data.JUMLAH}</td>
-                                                <td className='align-middle'>{data.STATUS_ALAT}</td>
-                                                <td className='align-middle'>{data.KONDISI_ALAT}</td>
+                                                <td className='align-middle'>
+                                                    <Badge bg={status}>{data.STATUS_ALAT}</Badge>{' '}
+                                                </td>
+                                                <td className='align-middle'>
+                                                    <Badge bg={kondisi}>{data.KONDISI_ALAT}</Badge>{' '}
+                                                </td>
                                                 <td className='align-middle'>
                                                     <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
                                                 </td>
@@ -133,7 +105,6 @@ const AlatLabTersedia = (props) => {
                 onHide={() => setModalDetail({...modalDetail, show: false})} 
                 data={{dataAlat: modalDetail.detailAlat, dataUser: props.dataUser, labID: props.data.labID}} 
                 count={() => setDataCount(dataCount-1)}
-                editAlatLab={() => setModalEdit(true)}
             />
 
             {/* modal tambah alat */}
@@ -142,14 +113,7 @@ const AlatLabTersedia = (props) => {
                 onHide={() => setModalTambah(false)} 
                 data={{dataUser: props.dataUser, dataLab: props.data.labID}} 
                 count={() => setDataCount(dataCount+1)} 
-            />
-
-            {/* modal edit alat */}
-            <EditAlatLab 
-                show={modalEdit}
-                onHide={() => setModalEdit(false)}
-                data={{dataUser: props.dataUser.NOMOR, dataLab: props.data.labID, dataAlat: modalDetail.detailAlat}}
-            />
+            />            
         </div>
     )
 }

@@ -91,7 +91,7 @@ const DetailPersetujuanPengajuan = (props) => {
                     url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPengajuan.php?function=tidakSetujuiPengajuan',
                     data: {
                         pegawai_nomor: props.data.dataUser.NOMOR,
-                        pengajuan_id: props.data.dataID,
+                        pengajuan_id: props.data.detail.ID,
                         tanggal_persetujuan: today
                     },
                     headers: {

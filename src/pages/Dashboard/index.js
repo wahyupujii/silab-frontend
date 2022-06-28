@@ -6,9 +6,8 @@ import SuperUser from "./SuperUser";
 
 const Dashboard = () => {
 
-    const role = localStorage.key("");
-    const dataUser = JSON.parse(localStorage.getItem(role));
-
+    const role = sessionStorage.key("");
+    const dataUser = JSON.parse(sessionStorage.getItem(role));
     return (
         <>
             {

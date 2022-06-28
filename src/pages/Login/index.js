@@ -20,6 +20,7 @@ const Login = () => {
             }
         })
         .then(result => {
+            console.log(result)
             if (result.data === "auth error") {
                 Swal.fire({
                     icon: 'error',
@@ -42,24 +43,24 @@ const Login = () => {
             }
         })
         .then(result => {
-            let roleExist = localStorage.key("");
-            localStorage.removeItem(roleExist);
-
             // kondisi role superUser
             const condition = ["Teknisi Laboratorium", "Kepala Laboratorium", "Kepala Prodi D3", "Kepala Prodi D4", "Kepala Departemen", "Asisten Direktur 2"];
-            if (result.data.length > 1 || result.data[0].NAMA_ROLE === condition[0]) {
-                result.data.map((data) => {
+            if (result.data.data.length > 1 || result.data.data[0].NAMA_ROLE === condition[0]) {
+                result.data.data.map((data) => {
                     let test = condition.some(el => JSON.stringify(data).includes(el));
                     if (test) {   // jika true, maka superuser
                         // set pengaturan superuser
-                        localStorage.setItem("superUser", JSON.stringify(data));
+                        sessionStorage.removeItem("user");
+                        sessionStorage.setItem("superUser", JSON.stringify(data));
                         return;
                     }
                 })
             } else {
-                localStorage.setItem("user", JSON.stringify(result.data[0]));
+                sessionStorage.removeItem("superUser");
+                sessionStorage.setItem("user", JSON.stringify(result.data.data[0]));
             }
             window.location.pathname = "/mis105/SILAB/dashboard";
+            // console.log(result);
         })
         .catch(() => {
             Swal.fire({
@@ -113,6 +114,18 @@ const Login = () => {
                                     </button>
                                 </InputGroup>
                             </Form.Group>
+
+                            {/* <Form.Group className="mb-3">
+                                <Form.Label>Login Sebagai</Form.Label>
+                                <Form.Select name="opsi_login" onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})} required>
+                                    <option>Login Sebagai</option>
+                                    <option value="dosen">Dosen</option>
+                                    <option value="teklab">Teknisi Laboratorium</option>
+                                    <option value="kalab">Kepala Laboratorium</option>
+                                    <option value="kaprodi">Kepala Prodi</option>
+                                    <option value="kadep">Kepala Departemen</option>
+                                </Form.Select>
+                            </Form.Group> */}
                         </div>
                             <Button className="mt-3 w-100" style={{ height: '48px', backgroundColor: '#4A47D6'}} onClick={login} >
                                 Masuk

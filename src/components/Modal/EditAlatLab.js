@@ -4,95 +4,130 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const EditAlatLab = ({ show, onHide, data }) => {
-    const [currentData, setCurrentData] = useState({})
-    const [loading, setLoading] = useState(true)
-
-    const [update, setUpdate] = useState({});
-
-    useEffect(() => {
-        setCurrentData({
-            ...currentData,
-            nama: data.dataAlat.NAMA,
-            jumlah: data.dataAlat.JUMLAH_TOTAL,
-            tahun: data.dataAlat.TAHUN,
-            no_seri: data.dataAlat.NOMOR_SERI,
-            gambar: data.dataAlat.GAMBAR,
-        });
-        setLoading(false)
-    },[])
-
-    const handleInputState = (event) => {
-        setCurrentData((prevState) => (
-            {...prevState, [event.target.name]: event.target.value}
-        ));
-        setUpdate({...update , [event.target.name] : event.target.value})
-    }
+    const [dataAlat, setDataAlat] = useState({...data.dataAlat})
 
     const updateAlat = (event) => {
         event.preventDefault();
-        console.log("current data : " , currentData);
-        console.log("update data : " , update);
+        Swal.fire({
+            icon: 'question',
+            title: 'Anda yakin ingin MENGUBAH DATA alat ini ? ',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=updateAlatLab',
+                    data: {
+                        ...dataAlat,
+                        date_kelola: today,
+                        teknisi_nomor: data.dataUser.NOMOR
+                    },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: "Berhasil mengubah data alat lab",
+                    })
+                }).catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: "Gagal mengubah data alat lab",
+                    })
+                })
+            }
+        }).catch()
     }
 
     return (
         <Modal show={show} onHide={() => onHide()}>
             <Form onSubmit={updateAlat}>
-                {
-                    loading ? (<div>Loading ...</div>) : (
-                        <>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Edit Alat</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Nama Alat</Form.Label>
-                                        <Form.Control
-                                            name="name"
-                                            value={currentData.nama}
-                                            onChange={handleInputState}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Jumlah Total</Form.Label>
-                                        <Form.Control
-                                            name="jumlah_total"
-                                            value={currentData.jumlah}
-                                            onChange={handleInputState}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Tahun</Form.Label>
-                                        <Form.Control
-                                            name="tahun"
-                                            value={currentData.tahun}
-                                            onChange={handleInputState}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>No Seri</Form.Label>
-                                        <Form.Control
-                                            name="no_seri"
-                                            value={currentData.no_seri}
-                                            onChange={handleInputState}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Gambar</Form.Label>
-                                        <Form.Control
-                                            name="gambar"
-                                            value={currentData.gambar}
-                                            onChange={handleInputState}
-                                        />
-                                    </Form.Group>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" type="submit">
-                                    Edit Data
-                                </Button>
-                            </Modal.Footer>
-                        </>
-                    )
-                }
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Alat</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Nama Alat</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.NAMA}
+                                onChange={(e) => setDataAlat({...dataAlat, NAMA: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Merk Alat</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.MERK}
+                                onChange={(e) => setDataAlat({...dataAlat, MERK: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Type Alat</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.TYPE}
+                                onChange={(e) => setDataAlat({...dataAlat, TYPE: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Spesifikasi Alat</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.SPEC}
+                                onChange={(e) => setDataAlat({...dataAlat, SPEC: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Jumlah</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={dataAlat.JUMLAH}
+                                onChange={(e) => setDataAlat({...dataAlat, JUMLAH: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Status Alat</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.STATUS_ALAT}
+                                onChange={(e) => setDataAlat({...dataAlat, STATUS_ALAT: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Kondisi Alat</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.KONDISI_ALAT}
+                                onChange={(e) => setDataAlat({...dataAlat, KONDISI_ALAT: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Tahun</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.TAHUN}
+                                onChange={(e) => setDataAlat({...dataAlat, TAHUN: e.target.value})}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>No Seri</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={dataAlat.NOMOR_SERI === null ? "-" : dataAlat.NOMOR_SERI}
+                                onChange={(e) => setDataAlat({...dataAlat, NOMOR_SERI: e.target.value})}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" type="submit">Edit</Button>
+                </Modal.Footer>
             </Form>
         </Modal>
     )

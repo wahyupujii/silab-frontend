@@ -2,72 +2,101 @@ import React, {useEffect, useState} from 'react'
 import {Modal, Form, Button, Table, Image} from "react-bootstrap";
 import axios from "axios";
 
-const PinjamAlat = ({show, onHide}) => {
+const PinjamAlat = ({show, onHide, count, dataUser}) => {
     const [inputs, setInputs] = useState({
         nama: "",
         tanggal_pinjam: "",
         tanggal_kembali: "",
         alat_lab : []
     });
-    const [alatLab, setAlatLab] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const dataLab = JSON.parse(localStorage.getItem("labByJurusan"))
+    const [alatLab, setAlatLab] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    let dataLab;
+    if (dataUser.NAMA_ROLE === "Dosen") {
+        dataLab = JSON.parse(localStorage.getItem("labByDosen"));
+    } else if (dataUser.NAMA_ROLE === "Kepala Laboratorium") {
+        dataLab = JSON.parse(localStorage.getItem("labByKalab"));
+    } else if (dataUser.NAMA_ROLE === "Teknisi Laboratorium") {
+        dataLab = JSON.parse(localStorage.getItem("labByTeklab"));
+    }
+    
+    useEffect(() => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatStatusAda',
+            data: { laboratorium_id: parseInt(dataLab[0].ID) },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            setAlatLab(result.data.data);
+            setLoading(false)
+        }).catch(() => {
+            setAlatLab(null);
+            setLoading(false)
+        })
+    }, [show])
 
     const pilihLabArea = (e) => {
         e.preventDefault();
         if (e.target.value !== "N/A") {
             axios({
                 method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatLabTersedia',
-                data: { labID: parseInt(e.target.value) },
+                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatStatusAda',
+                data: { laboratorium_id: parseInt(e.target.value) },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             }).then(result => {
-                let temp = [];
-                result.data.data.map(obj => {
-                    temp.push({...obj, jumlahDipinjam: 0})
-                })
-                setAlatLab(temp);
-                setIsLoading(false)
+                // let temp = [];
+                // result.data.data.map(obj => {
+                //     temp.push({...obj, jumlahDipinjam: 0})
+                // })
+                setAlatLab(result.data.data);
+                setLoading(false)
             }).catch((err) => {
                 setAlatLab(null);
-                setIsLoading(false)
+                setLoading(false)
             })
         }
     }
 
-    const plusAlatPinjam = (id, jumlahTersedia) => {
-        console.log(inputs)
-        const result = inputs.alat_lab.filter((obj) => {
-            return obj.id = id
-        })
-
-        if (result.length !== 0) {
-            if ((result[0].jumlah + 1) < jumlahTersedia) {
-                result[0].jumlah += 1
-            } else {
-                alert("jumlah melebihi alat yang tersedia")
-            }
+    // memilih alat yang dipinjam
+    const pinjamAlat = (alat) => {
+        let alatTerpilih = inputs.alat_lab;
+        if (alatTerpilih.includes(alat.ID)) {
+            inputs.alat_lab.pop(alat.ID);
         } else {
-            let obj = {
-                id: id,
-                jumlah: 1
-            }
-            setInputs({...inputs, alat_lab: [...inputs.alat_lab, obj]})
-            // inputs.alat_lab.push(obj)
+            setInputs({...inputs, alat_lab: [...inputs.alat_lab, alat.ID]})
         }
-        console.log(inputs)
     }
 
-    const minusAlatPinjam = () => {
+    const buatPeminjaman = (e) => {
+        e.preventDefault();
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=buatPeminjaman',
+            data: {
+                ...inputs, 
+                nomor_pegawai: dataUser.NOMOR,
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            count();
+            onHide();
+        }).catch(() => {
+            // swal gagal meminjam alat
+        })
 
     }
 
     return (
         <Modal show={show} onHide={() => onHide()} size='lg'>
-            <Form encType="multipart/form-data" >
+            <Form encType="multipart/form-data" onSubmit={buatPeminjaman} >
                 <Modal.Header closeButton>
                     <Modal.Title>Form Peminjaman Alat</Modal.Title>
                 </Modal.Header>
@@ -76,10 +105,11 @@ const PinjamAlat = ({show, onHide}) => {
                         <Form.Group className="mb-3">
                             <Form.Label>Nama Peminjaman</Form.Label>
                             <Form.Control
-                                type="name"
-                                name='nama'
-                                placeholder='nama peminjaman'
+                                type="text"
+                                name='nama_peminjaman'
+                                placeholder='Nama Peminjaman'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -88,6 +118,7 @@ const PinjamAlat = ({show, onHide}) => {
                                 name='tanggal_pinjam'
                                 type="date"
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -96,35 +127,47 @@ const PinjamAlat = ({show, onHide}) => {
                                 name='tanggal_kembali'
                                 type="date"
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
+                                required
                             />
                         </Form.Group>
                     </div>
                     
-                    <Form.Group>
-                        <Form.Label>Pilih Area Lab</Form.Label>
-                        <Form.Select onChange={pilihLabArea}>
-                            <option value="N/A">Pilih Lab Area</option>
-                            {
-                                dataLab.map(lab => {
-                                    return (
-                                        <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
-                                    )
-                                })
-                            }
-                        </Form.Select>
-                    </Form.Group>
+                    {
+                        dataLab.length < 2 ? (
+                            <Form.Group>
+                                <Form.Label>Area Lab</Form.Label>
+                                <Form.Control
+                                    value={dataLab[0].NAMA}
+                                    readOnly
+                                ></Form.Control>
+                            </Form.Group>
+                        ) : (
+                            <Form.Group>
+                                <Form.Label>Pilih Area Lab</Form.Label>
+                                <Form.Select onChange={pilihLabArea} required>
+                                    <option value="N/A">Pilih Lab Area</option>
+                                    {
+                                        dataLab.map(lab => {
+                                            return (
+                                                <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
+                                            )
+                                        })
+                                    }
+                                </Form.Select>
+                            </Form.Group>
+                        )
+                    }
 
                     <div className="d-flex justify-content-between mt-2">
                         {
-                            isLoading ? (<div>Silahkan memilih lab area diatas terlebih dahulu</div>) : (
+                            loading ? (<div>Loading ... </div>) : (
                                 <Table>
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Gambar</th>
                                             <th>Nama Alat</th>
-                                            <th>Jumlah Tersedia</th>
-                                            <th>Jumlah Dipinjam</th>
+                                            <th>Detail Alat</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -135,16 +178,16 @@ const PinjamAlat = ({show, onHide}) => {
                                             alatLab.map((alat, index) => {
                                                 return (
                                                     <tr key={alat.ID}>
-                                                        <td>{index+1}</td>
-                                                        <td>
+                                                        <td className='align-middle'>{index+1}</td>
+                                                        <td className='align-middle'>
                                                             <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
                                                         </td>
-                                                        <td>{alat.NAMA}</td>
-                                                        <td>{alat.JUMLAH_TERSEDIA}</td>
-                                                        <td>
-                                                            <Button variant="primary" onClick={() => minusAlatPinjam(alat.ID, alat.JUMLAH_TERSEDIA)} >-</Button>
-                                                            <span className='mx-4'>0</span>
-                                                            <Button variant="primary" onClick={() => plusAlatPinjam(alat.ID, alat.JUMLAH_TERSEDIA)} >+</Button>
+                                                        <td className='align-middle'>{alat.NAMA}</td>
+                                                        <td className='align-middle'>
+                                                            <Button variant="primary">Detail</Button>
+                                                        </td>
+                                                        <td className='align-middle'>
+                                                            <Button variant="outline-primary" onClick={() => pinjamAlat(alat)}>Pinjam</Button>
                                                         </td>
                                                     </tr>
                                                 )

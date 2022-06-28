@@ -5,6 +5,11 @@ import BuatPengajuan from "./BuatPengajuan";
 import TambahAlatBaru from "./TambahAlatBaru";
 import PinjamAlat from "./PinjamAlat";
 import UbahKalab from "./UbahKalab";
+import SetujuPeminjaman from "./SetujuPeminjaman";
+import BuatPerbaikan from "./BuatPerbaikan";
+import DetailPeminjaman from "./DetailPeminjaman";
+import DetailPerbaikan from "./DetailPerbaikan";
+import SetujuPerbaikan from "./SetujuPerbaikan";
 
 export {
     DetailAlatLab,
@@ -13,5 +18,10 @@ export {
     BuatPengajuan,
     TambahAlatBaru,
     PinjamAlat,
-    UbahKalab
+    UbahKalab,
+    SetujuPeminjaman,
+    BuatPerbaikan,
+    DetailPeminjaman,
+    DetailPerbaikan,
+    SetujuPerbaikan
 }

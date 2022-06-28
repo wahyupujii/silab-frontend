@@ -3,7 +3,7 @@ import { Card, Button, Modal, Image } from 'react-bootstrap'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-import { Document, Page } from 'react-pdf';
+// import { Document, Page } from 'react-pdf';
 
 // component
 import { TambahAlatBaru } from '../../../components';

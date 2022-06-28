@@ -17,7 +17,7 @@ const LabArea = ({dataUser}) => {
         if (dataUser.NAMA_ROLE === "Teknisi Laboratorium") {
             getLabByTekLab();
         } else if (dataUser.NAMA_ROLE === "Kepala Laboratorium") {
-            getLabIDByKalab();
+            getLabByKalab();
         }
 
     }, [])
@@ -37,12 +37,15 @@ const LabArea = ({dataUser}) => {
                 setDataLab(result.data.data[0]);
             }
             setDataLab(result.data.data);
+            // check localStorage not empty
+            let key = localStorage.key("");
+            localStorage.removeItem(key);
             localStorage.setItem("labByTeklab", JSON.stringify(result.data.data));
             setLoading(false);
         }).catch()
     }
 
-    const getLabIDByKalab = () => {
+    const getLabByKalab = () => {
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/laboratory.php?function=getLabByKalab',
@@ -51,8 +54,11 @@ const LabArea = ({dataUser}) => {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(result => {
+            // check localStorage not empty
+            let key = localStorage.key("");
+            localStorage.removeItem(key);
             localStorage.setItem("labByKalab", JSON.stringify(result.data.data));
-            setLabID(result.data.data.ID);
+            setLabID(result.data.data[0].ID);
             setLoading(false);
         }).catch()
     }

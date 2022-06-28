@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Breadcrumb, Card, Button } from 'react-bootstrap'
+import { Breadcrumb, Card, Button, Image, Modal } from 'react-bootstrap'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -11,6 +11,8 @@ const DetailPengajuan = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [dataCount, setDataCount] = useState(0);
+    const [modalFile, setModalFile] = useState({show: "", data: ""});
+
     useEffect(() => {
         axios({
             method: 'post',
@@ -59,6 +61,13 @@ const DetailPengajuan = (props) => {
         })
     }
 
+    const showFileUpload = (file) => {
+        let ekstensi = file.split(".")[1];
+        if (ekstensi === "jpg") { 
+            setModalFile({...modalFile, show: "jpg", data: file})
+        }
+    }
+
     return (
         <div className='w-100 p-3'>
             <Breadcrumb>
@@ -85,7 +94,7 @@ const DetailPengajuan = (props) => {
                                             <span>Jumlah : {data.JUMLAH}</span>
                                             <span className="text-danger">Spesifikasi : {data.SPESIFIKASI}</span>
                                             <div className="d-flex justify-content-between">
-                                                <Button variant="primary" className="my-3">Lihat File</Button>
+                                                <Button variant="primary" className="my-3" onClick={() => showFileUpload(data.UPLOAD_FILE)}>Lihat File</Button>
                                                 <Button variant="secondary" className="my-3" disabled>Edit</Button>
                                                 <Button variant="danger" className="my-3" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
                                             </div>
@@ -104,6 +113,18 @@ const DetailPengajuan = (props) => {
                 count={() => setDataCount(dataCount+1)}
                 data={{pengajuanID: props.data.dataID}}
             />
+
+            {/* modal show file jpg*/}
+            <Modal
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                show={modalFile.show === "jpg" ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
+                centered
+            >
+                <Modal.Body>
+                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} fluid />
+                </Modal.Body>
+            </Modal>
 
         </div>
     )

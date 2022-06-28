@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Breadcrumb, Card, Button, Table} from "react-bootstrap";
+import {Breadcrumb, Button, Table, Badge} from "react-bootstrap";
 import axios from "axios";
 
 import DetailPengajuan from './DetailPengajuan';
@@ -7,7 +7,7 @@ import DetailPengajuan from './DetailPengajuan';
 // component
 import { BuatPengajuan } from '../../../components/Modal';
 
-const PengajuanAlat = ({pegawaiNomor}) => {
+const PengajuanAlat = ({dataUser}) => {
     const [show, setShow] = useState(false);
     const [detailPengajuan, setDetailPengajuan] = useState({show: false, dataID: "", dataTitle: ""})
     const [dataPengajuan, setDataPengajuan] = useState(null);
@@ -18,7 +18,7 @@ const PengajuanAlat = ({pegawaiNomor}) => {
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=getPengajuanByNomorPegawai',
-            data: {pegawai_nomor: pegawaiNomor},
+            data: {pegawai_nomor: dataUser.NOMOR},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
@@ -30,7 +30,7 @@ const PengajuanAlat = ({pegawaiNomor}) => {
             setDataPengajuan(null);
             setLoading(false)
         })
-    }, [dataCount, pegawaiNomor])
+    }, [dataCount, dataUser])
 
     return (
         <>
@@ -46,48 +46,52 @@ const PengajuanAlat = ({pegawaiNomor}) => {
                             <Button variant="primary" onClick={() => setShow(true)}>Buat Pengajuan</Button>
                         </div>
 
-                        <div className='mt-2'>
-                            <Table striped>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Nama Pengajuan</th>
-                                        <th>Tanggal Pengajuan</th>
-                                        <th>Status</th>
-                                        <th>Detail Pengajuan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        loading ? (<div>Loading</div>) : dataPengajuan == null ? (<span>Belum Ada Pengajuan ALat</span>) : 
-                                        dataPengajuan.map((data, index) => {
-                                            let status = data.STATUS === 'Pengajuan Ditolak' ? 'text-danger' : data.STATUS === 'Dilakukan Pengadaan' ? 'text-success' : 'text-primary';
-                                            return (
-                                                <tr key={data.ID}>
-                                                    <td className='align-middle'>{index+1}</td>
-                                                    <td className='align-middle'>{data.NAMA}</td>
-                                                    <td className='align-middle'>{data.TANGGAL_PENGAJUAN}</td>
-                                                    <td className={`${status} align-middle`}>{data.STATUS}</td>
-                                                    <td className='align-middle'>
-                                                        <Button 
-                                                            variant="primary"
-                                                            onClick={() => setDetailPengajuan({show: true, dataID: data.ID, dataTitle: data.NAMA})}
-                                                        >Detail</Button>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })
-                                    }
-                                </tbody>
-                            </Table>
-                        </div>
-        
+                        {
+                            loading ? (<div>Loading ... </div>) : dataPengajuan === null ? (<span className="mt-3">Belum Ada Pengajuan Alat</span>) : (
+                                <div className='mt-2'>
+                                    <Table striped>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Nama Pengajuan</th>
+                                                <th>Tanggal Pengajuan</th>
+                                                <th>Status</th>
+                                                <th>Detail Pengajuan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                dataPengajuan.map((data, index) => {
+                                                    let status = data.STATUS === 'Pengajuan Ditolak' ? 'danger' : data.STATUS === 'Dilakukan Pengadaan' ? 'success' : 'primary';
+                                                    return (
+                                                        <tr key={data.ID}>
+                                                            <td className='align-middle'>{index+1}</td>
+                                                            <td className='align-middle'>{data.NAMA}</td>
+                                                            <td className='align-middle'>{data.TANGGAL_PENGAJUAN}</td>
+                                                            <td className='align-middle'>
+                                                                <Badge bg={status}>{data.STATUS}</Badge>{' '}
+                                                            </td>
+                                                            <td className='align-middle'>
+                                                                <Button 
+                                                                    variant="primary"
+                                                                    onClick={() => setDetailPengajuan({show: true, dataID: data.ID, dataTitle: data.NAMA})}
+                                                                >Detail</Button>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            )
+                        }
 
                         {/* modal buat pengajuan */}
                         <BuatPengajuan 
                             show={show}
                             onHide={() => setShow(false)}
-                            data={{pegawaiNomor}}
+                            dataUser={dataUser}
                             count={() => setDataCount(dataCount+1)}
                         />
                     </div>

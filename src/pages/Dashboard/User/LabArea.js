@@ -5,7 +5,8 @@ import axios from 'axios'
 
 const LabArea = ({dataUser}) => {
     const [loading,setLoading] = useState(true);
-    const [alatLab, setAlatLab] = useState({show: false, labID: ""});
+    const [alatLab, setAlatLab] = useState({show: false, lab_id: ""});
+    
     useEffect(() => {
         axios({
             method: 'post',
@@ -14,11 +15,16 @@ const LabArea = ({dataUser}) => {
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
-        }).then(result => {
-            setAlatLab({...alatLab, show: true, labID: result.data.data.LABORATORIUM_ID});
+        }).then(result => {            
+            setAlatLab({...alatLab, lab_id: result.data.data[0].ID});
+           
+            // check localStorage not empty
+            let key = localStorage.key("");
+            localStorage.removeItem(key);
+            localStorage.setItem("labByDosen", JSON.stringify(result.data.data));
             setLoading(false)
         }).catch(() => {
-            setAlatLab({...alatLab, show: true, labID: null});
+            setAlatLab(null);
             setLoading(false)
         })
     }, [])
@@ -55,9 +61,14 @@ const LabArea = ({dataUser}) => {
                     ) : ( <AlatLab handleBack={(value) => setAlatLab({...alatLab, show: value})} data={{labID: alatLab.labID, labTitle: alatLab.labTitle}} /> )
                 )
             } */}
-            {
+            {/* {
                 loading ? (<div>loading ... </div>) : (
                     <AlatLab handleBack={(value) => setAlatLab({...alatLab, show: value})} data={{labID: alatLab.labID}} />
+                )
+            } */}
+            {
+                loading ? (<div>Loading ... </div>) : (
+                    <AlatLab handleBack={() => setAlatLab({...alatLab, show: false})} data={{labID: alatLab.lab_id}} />
                 )
             }
         </>
