@@ -3,10 +3,8 @@ import { Card, Button, Modal, Image } from 'react-bootstrap'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// import { Document, Page } from 'react-pdf';
-
 // component
-import { TambahAlatBaru } from '../../../components';
+import { TambahAlatBaru, DetailAlatPengajuan } from '../../../components';
 import { Link } from 'react-router-dom';
 
 const DetailPengajuan = ({handleBack, dataPengajuan}) => {
@@ -16,14 +14,9 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
     const [loading, setLoading] = useState(true);
     const [dataCount, setDataCount] = useState(0);
 
-    const [modalFile, setModalFile] = useState({show: "", data: ""});
+    const [rincianAlat, setRincianAlat] = useState({show: false, data: ""})
 
-    // // react-pdf
-    // const [numPages, setNumPages] = useState(null);
-    // const [pageNumber, setPageNumber] = useState(1);
-    // const onDocumentLoadSuccess = ({ numPages }) => {
-    //     setNumPages(numPages);
-    // }
+    const [modalFile, setModalFile] = useState({show: "", data: ""});
 
     useEffect(() => {
         axios({
@@ -34,8 +27,6 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(result => {
-            // const str = result.data.data[0].UPLOAD_FILE
-            // setEkstensi(str.split(".")[1]);
             setDetailPengajuan(result.data.data);
             setDataCount(result.data.data.length);
             setLoading(false);
@@ -83,6 +74,23 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
         }
     }
 
+    const ajukanPengajuan = () => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=ajukanPengajuan',
+            data: {
+                pengajuanID: dataPengajuan.ID
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(() => {
+            window.location.pathname = '/mis105/SILAB/dashboard/pengajuan-alat'
+        }).catch(err => {
+            console.log("err", err)
+        })
+    }
+
     return (
         <div className='w-100 p-3'>
             <div>
@@ -91,7 +99,17 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
                         <Link className="mx-3" onClick={() => handleBack()}>Kembali</Link>
                         <h2>{dataPengajuan.NAMA}</h2>
                     </div>
-                    <Button variant="primary" onClick={() => setShow(true)}>Tambah Alat</Button>
+                    <div className="d-flex">
+                        {
+                            dataPengajuan.STATUS === '-' || dataPengajuan.STATUS === 'Pengajuan Ditolak' ? (
+                                <>
+                                    <Button variant="success" onClick={() => ajukanPengajuan()}>Ajukan Pengajuan</Button>
+                                    <Button variant="primary" className="mx-2" onClick={() => setShow(true)}>Tambah Alat</Button>
+                                </>
+                            ) : (<div></div>)
+                        }
+                        <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: dataPengajuan.NAMA})}>Lihat Rincian Semua Alat</Button>
+                    </div>
                 </div>
             </div>
             <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
@@ -106,12 +124,18 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
                                     <Card.Body>
                                         <Card.Title className="mb-3">{data.NAMA}</Card.Title>
                                         <div className="d-flex flex-column">
-                                            <span>Jumlah : {data.JUMLAH}</span>
+                                            <span>Jumlah : {data.JUMLAH}</span> 
                                             <span className="text-secondary">Spesifikasi : {data.SPESIFIKASI}</span>
                                             <div className="d-flex justify-content-between">
                                                 <Button variant="primary" className="mt-2" onClick={() => showFileUpload(data.UPLOAD_FILE)}>Lihat File</Button>
-                                                <Button variant="secondary" className="mt-2" disabled>Edit</Button>
-                                                <Button variant="danger" className="mt-2" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
+                                                {
+                                                    dataPengajuan.STATUS === '-' || dataPengajuan.STATUS === 'Pengajuan Ditolak' ? (
+                                                        <>
+                                                            <Button variant="secondary" className="mt-2">Edit</Button>
+                                                            <Button variant="danger" className="mt-2" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
+                                                        </>
+                                                    ) : (<div></div>)
+                                                }
                                             </div>
                                         </div>
                                     </Card.Body>
@@ -141,22 +165,12 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
                 </Modal.Body>
             </Modal>
 
-            {/* <Modal
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                show={modalFile.show === "pdf" ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
-                centered
-            >
-                <Modal.Body>
-                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} fluid />
-                    <Document file="somefile.pdf" onLoadSuccess={onDocumentLoadSuccess}>
-                        <Page pageNumber={pageNumber} />
-                    </Document>
-                    <p>
-                        Page {pageNumber} of {numPages}
-                    </p>
-                </Modal.Body>
-            </Modal> */}
+             {/* modal detail alat pengajuan */}
+             <DetailAlatPengajuan 
+                show={rincianAlat.show}
+                onHide={() => setRincianAlat({...rincianAlat, show: false})}
+                data={rincianAlat.data}
+            />
 
         </div>
     )

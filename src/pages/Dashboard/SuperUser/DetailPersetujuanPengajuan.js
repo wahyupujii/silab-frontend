@@ -3,10 +3,14 @@ import { Card, Button, Modal, Image } from 'react-bootstrap';
 import axios from "axios";
 import Swal from "sweetalert2";
 
+// component modal
+import { DetailAlatPengajuan } from '../../../components';
+
 const DetailPersetujuanPengajuan = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modalFile, setModalFile] = useState({show: "", data: ""})
+    const [rincianAlat, setRincianAlat] = useState({show: false, data: ""})
     
     useEffect(() => {
         axios({
@@ -24,7 +28,7 @@ const DetailPersetujuanPengajuan = (props) => {
         }).catch((err) => {
             console.error(err)
         })
-    }, data)
+    }, [])
 
     const setuju = () => {
         const opsiSetuju = ["Menunggu ACC KaProdi", "Menunggu ACC KaDep", "Menunggu ACC AsDir2", "Dilakukan Pengadaan"];
@@ -125,8 +129,9 @@ const DetailPersetujuanPengajuan = (props) => {
     
     return (
         <div className='w-100'>
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center justify-content-between">
                 <h2 className="mx-3">{props.data.detail.NAMA_PENGAJUAN}</h2>
+                <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: props.data.detail.NAMA_PENGAJUAN})}>Lihat Rincian Semua Alat</Button>
             </div>
             <div className='d-flex align-items-center mt-3'>
                 <span className='mx-3'>Setujui : </span>
@@ -166,6 +171,13 @@ const DetailPersetujuanPengajuan = (props) => {
                     <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} fluid />
                 </Modal.Body>
             </Modal>
+
+            {/* modal detail alat pengajuan */}
+            <DetailAlatPengajuan 
+                show={rincianAlat.show}
+                onHide={() => setRincianAlat({...rincianAlat, show: false})}
+                data={rincianAlat.data}
+            />
         </div>
     )
 }

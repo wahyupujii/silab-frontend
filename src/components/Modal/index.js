@@ -10,6 +10,7 @@ import BuatPerbaikan from "./BuatPerbaikan";
 import DetailPeminjaman from "./DetailPeminjaman";
 import DetailPerbaikan from "./DetailPerbaikan";
 import SetujuPerbaikan from "./SetujuPerbaikan";
+import DetailAlatPengajuan from "./DetailAlatPengajuan";
 
 export {
     DetailAlatLab,
@@ -23,5 +24,6 @@ export {
     BuatPerbaikan,
     DetailPeminjaman,
     DetailPerbaikan,
-    SetujuPerbaikan
+    SetujuPerbaikan,
+    DetailAlatPengajuan
 }

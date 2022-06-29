@@ -91,7 +91,7 @@ const RiwayatPengajuan = ({dataUser}) => {
                                                 <th>Nama Pengajuan</th>
                                                 <th>Tanggal Pengajuan</th>
                                                 <th>Status</th>
-                                                <th>Detail Pengajuan</th>
+                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -107,10 +107,23 @@ const RiwayatPengajuan = ({dataUser}) => {
                                                                 <Badge bg={status}>{data.STATUS}</Badge>{' '}
                                                             </td>
                                                             <td className='align-middle'>
-                                                                <Button 
-                                                                    variant="primary"
-                                                                    onClick={() => setDetailPengajuan({show: true, detail: data})}
-                                                                >Detail</Button>
+                                                                {
+                                                                    data.JUMLAH_ALAT == 0 ? (
+                                                                        <Button 
+                                                                            variant="outline-primary"
+                                                                            onClick={() => setDetailPengajuan({show: true, detail: data})}
+                                                                        >Tambah</Button>        
+                                                                    ) : (
+                                                                        <Button 
+                                                                            variant="primary"
+                                                                            onClick={() => setDetailPengajuan({show: true, detail: data})}
+                                                                        >Detail</Button>
+                                                                    )
+                                                                }
+                                                                 <Button 
+                                                                    variant="danger"
+                                                                    className="mx-2"
+                                                                >Hapus</Button>
                                                             </td>
                                                         </tr>
                                                     )

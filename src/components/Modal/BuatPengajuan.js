@@ -34,7 +34,7 @@ const BuatPengajuan = ({ show, onHide, dataUser, count }) => {
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=buatPengajuan',
             data: {
                 ...object,
-                status: "Menunggu ACC KaLab",
+                status: "-",
                 pegawai_nomor: dataUser.NOMOR,
             },
             headers: {
