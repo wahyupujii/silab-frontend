@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Breadcrumb, Badge, Button, Table} from "react-bootstrap";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 import DetailPengajuan from './DetailPengajuan';
 import PersetujuanPengajuan from './PersetujuanPengajuan';
@@ -71,6 +72,41 @@ const RiwayatPengajuan = ({dataUser}) => {
         });
     }, [dataCount, dataUser])
 
+    const deletePengajuan = (id) => {
+        Swal.fire({
+            icon: 'question',
+            title: 'Anda yakin ingin MENGUBAH DATA alat ini ? ',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then((response) => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=deletePengajuan',
+                    data: {
+                        pengajuanID: id
+                    },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: "Berhasil menghapus pengajuan",
+                    })
+                    setDataCount(dataCount-1);
+                }).catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: "Gagal menghapus pengajuan",
+                        text: "Mungkin pengajuan sedang dalam proses persetujuan"
+                    })
+                });
+            }
+        })
+    }
+
     return (
         <>  
             {
@@ -123,6 +159,7 @@ const RiwayatPengajuan = ({dataUser}) => {
                                                                  <Button 
                                                                     variant="danger"
                                                                     className="mx-2"
+                                                                    onClick={() => deletePengajuan(data.ID)}
                                                                 >Hapus</Button>
                                                             </td>
                                                         </tr>

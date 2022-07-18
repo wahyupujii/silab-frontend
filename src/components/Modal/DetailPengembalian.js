@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react'
-import {Modal, Button, Form, Table, Image} from "react-bootstrap";
+import {Modal, Form, Button, Table, Image} from "react-bootstrap";
 import axios from "axios";
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
 
-const DetailPeminjaman = ({show, onHide, count, data}) => {
+const DetailPengembalian = ({show, onHide, count, data}) => {
     const [dataAlat, setDataAlat] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    
     useEffect(() => {
         if (show) {
             axios({
                 method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=getAlatByKeperluanPinjam',
+                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengembalianAlat.php?function=getAlatByKeperluanPinjam',
                 data: {
                     keperluan_pinjam: data.KEPERLUAN_PINJAM
                 },
@@ -28,10 +28,10 @@ const DetailPeminjaman = ({show, onHide, count, data}) => {
         }
     }, [show])
 
-    const kembalikanAlat = () => {
+    const setujuPengembalian = () => {
         Swal.fire({
             icon: 'question',
-            title: 'Anda yakin ingin MENGAJUKAN PENGEMBALIAN ALAT ? ',
+            title: 'Anda yakin ingin MENYETUJUI PENGEMBALIAN ALAT ini ? ',
             showDenyButton: true,
             confirmButtonText: 'Ya saya yakin',
             denyButtonText: 'Tidak jadi'
@@ -39,7 +39,7 @@ const DetailPeminjaman = ({show, onHide, count, data}) => {
             if (response.isConfirmed) {
                 axios({
                     method: 'post',
-                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/peminjamanAlat.php?function=ajukanKembalianAlat',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengembalianAlat.php?function=setujuPengembalian',
                     data: {
                         keperluan_pinjam: data.KEPERLUAN_PINJAM
                     },
@@ -49,14 +49,14 @@ const DetailPeminjaman = ({show, onHide, count, data}) => {
                 }).then(result => {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Berhasil MENGAJUKAN PENGEMBALIAN ALAT',
+                        title: 'Berhasil MENYETUJUI PENGEMBALIAN ALAT',
                     })
                     onHide();
                     count();
                 }).catch(() => {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Gagal MENGAJUKAN PENGEMBALIAN ALAT',
+                        title: 'Gagal MENYETUJUI PENGEMBALIAN ALAT',
                     })
                 })
             }
@@ -71,12 +71,22 @@ const DetailPeminjaman = ({show, onHide, count, data}) => {
             keyboard={false}
         >
             <Modal.Header closeButton>
-                <Modal.Title>Detail Peminjaman</Modal.Title>
+                <Modal.Title>Detail Pengembalian Alat</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form.Group className="mb-3">
                     <Form.Label>Keperluan Pinjam</Form.Label>
                     <Form.Control value={data.KEPERLUAN_PINJAM} readOnly></Form.Control>
+                </Form.Group>
+                <Form.Group className="mb-3 d-flex w-100">
+                    <div className='w-50'>
+                        <Form.Label>Tanggal Pinjam</Form.Label>
+                        <Form.Control value={data.TANGGAL_PINJAM} readOnly></Form.Control>
+                    </div>
+                    <div className='w-50'>
+                        <Form.Label>TANGGAL_KEMBALI</Form.Label>
+                        <Form.Control value={data.TANGGAL_KEMBALI} readOnly></Form.Control>
+                    </div>
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Daftar Alat</Form.Label>
@@ -113,8 +123,8 @@ const DetailPeminjaman = ({show, onHide, count, data}) => {
             </Modal.Body>
             <Modal.Footer>
                 {
-                    data.STATUS_PINJAM === "Disetujui KaLab" && data.STATUS_KEMBALI === "-"? (
-                        <Button variant="info" onClick={() => kembalikanAlat()}>
+                    data.STATUS_PINJAM === "Disetujui KaLab" && data.STATUS_KEMBALI === "Menunggu ACC KaLab"? (
+                        <Button variant="info" onClick={() => setujuPengembalian()}>
                             Kembalikan Alat
                         </Button>
                     ) : (<div></div>)
@@ -127,4 +137,4 @@ const DetailPeminjaman = ({show, onHide, count, data}) => {
     )
 }
 
-export default DetailPeminjaman
+export default DetailPengembalian

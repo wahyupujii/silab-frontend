@@ -1,83 +1,131 @@
 import React, {useState, useEffect} from 'react'
-import {Card, Button} from "react-bootstrap"
+import {Button, Table, Badge, Breadcrumb} from "react-bootstrap"
 import axios from "axios"
 
-const PemindahanAlat = () => {
-	const dataLab = JSON.parse(localStorage.getItem("labByTeklab"));
-	const [labSelected, setLabSelected] = useState(null);
+// component modal
+import { BuatPemindahan, DetailPemindahan } from '../../../components'
+
+const PemindahanAlat = ({dataUser}) => {
+    const [dataPemindahan, setDataPemindahan] = useState([]);
+    const [dataCount, setDataCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    // modal buat pemindahan
+    const [modal, setModal] = useState(false);
+
+    const [detailPemindahan, setDetailPemindahan] = useState({show: false, data: ""})
+
+    useEffect(() => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pemindahanAlat.php?function=getPemindahanByTeklab',
+            data: {
+                teknisi_lab: parseInt(dataUser.NOMOR)
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            setDataPemindahan(result.data.data);
+            setDataCount(result.data.data.length);
+            setLoading(false);
+        }).catch(() => {
+            setDataPemindahan(null);
+            setLoading(false)
+        });
+    }, [dataCount])
+
+    const deletePemindahan = (id) => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pemindahanAlat.php?function=deletePemindahan',
+            data: {
+                pemindahan_id: id
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            setDataCount(dataCount-1);
+        }).catch();
+    }
+
     return (
 		<>
-			{/* {
-				dataLab.length > 1 || labSelected === null ? (
-					<>
-						<div className="w-100 p-3">
-							<Breadcrumb>
-								<Breadcrumb.Item href="#">Dashboard</Breadcrumb.Item>
-								<Breadcrumb.Item>Pilih Area Lab</Breadcrumb.Item>
-							</Breadcrumb>
-							<h2>Pemindahan Alat Lab</h2>
-						</div>
-						<div className="d-flex flex-wrap justify-content-evenly px-4 py-3" style={{maxWidth: '100%', background: 'white'}}>
-						{
-							dataLab.map(lab => {
-								return (
-									<CardLab data={lab} onOpen={() => setPenghuniLab({...penghuniLab, show: true, dataLab: lab})} />
-								)
-							})
-						}
-						</div>
-					</>
-				) : (
+            <div className="w-100 p-3">
+                <Breadcrumb>
+                    <Breadcrumb.Item href="#">Dashboard</Breadcrumb.Item>
+                    <Breadcrumb.Item>Pemindahan Alat Lab</Breadcrumb.Item>
+                </Breadcrumb>
+            </div>
+			<div className='px-4 py-3 mt-2' style={{maxWidth: '100%', background: 'white'}}>
+                <div className="d-flex justify-content-between align-items-center">
+                    <h1>Riwayat Pemindahan Alat</h1>
+                    <Button onClick={() => setModal(true)}>Buat Pemindahan</Button>
+                </div>
 
-				)
-			}
-			
-			{
-                loading ? (<div>Loading ... </div>) : (
-                    penghuniLab.show === false ? (
-                        getLab.length > 1 ? (
-                            <div className='w-100 p-3'>
-                                <Breadcrumb>
-                                    <Breadcrumb.Item href="#">Dashboard</Breadcrumb.Item>
-                                    <Breadcrumb.Item>Pilih Area Lab</Breadcrumb.Item>
-                                </Breadcrumb>
-                                <h2>Pilih Area Lab</h2>
-                                <div className="d-flex flex-wrap justify-content-evenly px-4 py-3" style={{maxWidth: '100%', background: 'white'}}>
+                {
+                    loading ? (<div>Loading ... </div>) : dataPemindahan === null ? (<span>Belum Ada Pemindahan Alat Yang Dilakukan</span>) : (
+                        <div>
+                            <Table striped>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nama Pemindahan</th>
+                                        <th>Tanggal Pemindahan</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     {
-                                        getLab.map(lab => {
+                                        dataPemindahan.map((data, index) => {
+                                            let status = data.STATUS === 'Ditolak KaLab' ? 'danger' : data.STATUS === 'Disetujui KaLab' ? 'success' : 'primary';
                                             return (
-                                                <CardLab data={lab} onOpen={() => setPenghuniLab({...penghuniLab, show: true, dataLab: lab})} />
+                                                <tr>
+                                                    <td className='align-middle'>{index+1}</td>
+                                                    <td className='align-middle'>{data.NAMA_PEMINDAHAN}</td>
+                                                    <td className='align-middle'>{data.TANGGAL_PEMINDAHAN}</td>
+                                                    <td className="align-middle">
+                                                        <Badge bg={status}>{data.STATUS}</Badge>{' '}
+                                                    </td>
+                                                    <td className='align-middle'>
+                                                        <Button 
+                                                            variant="primary"
+                                                            onClick={() => setDetailPemindahan({show: true, data: data})}
+                                                        >Detail</Button>
+                                                        <Button 
+                                                            variant="danger"
+                                                            className="mx-2"
+                                                            onClick={() => deletePemindahan(data.ID)}
+                                                        >Hapus</Button>
+                                                    </td>
+                                                </tr>
                                             )
                                         })
                                     }
-                                </div>
-                            </div>
-                        ) : (
-                            <SetPenghuniLab handleBack={() => setPenghuniLab({...penghuniLab, show: false})} data={penghuniLab} />
-                        )
-                    ) : (
-                        <SetPenghuniLab handleBack={() => setPenghuniLab({...penghuniLab, show: false})} data={penghuniLab} />
+                                </tbody>
+                            </Table>
+                        </div>
                     )
-                )
-            } */}
-		</>
-    )
-}
+                }
+                
+                {/* modal pemindahan */}
+                <BuatPemindahan 
+                    show={modal}
+                    onHide={() => setModal(false)}
+                    data={dataUser}
+                    count={() => setDataCount(dataCount+1)}
+                />
 
-const CardLab = ({data, onOpen}) => {
-    return (
-        <>
-            <Card className="my-3" key={data.ID}>
-                <Card.Header className="fw-bold">{data.JURUSAN}</Card.Header>
-                <Card.Body>
-                    <Card.Title className="mb-3">Laboratorium {data.NAMA}</Card.Title>
-                    <div className="d-flex align-items-center justify-content-between">
-                        <span>Ruang {data.KODE_RUANG}</span>
-                        <Button variant="primary" onClick={() => onOpen()}>Pilih ...</Button>
-                    </div>
-                </Card.Body>
-            </Card>
-        </>
+                {/* modal detail pemindahan */}
+                <DetailPemindahan 
+                    show={detailPemindahan.show}
+                    onHide={() => setDetailPemindahan({...detailPemindahan, show: false})}
+                    data={detailPemindahan.data}
+                />
+            </div>
+		</>
     )
 }
 

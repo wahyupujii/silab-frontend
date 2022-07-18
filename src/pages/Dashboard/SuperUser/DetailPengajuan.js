@@ -4,8 +4,10 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 // component
-import { TambahAlatBaru, DetailAlatPengajuan } from '../../../components';
+import { TambahAlatBaru, DetailAlatPengajuan, EditAlatBaru } from '../../../components';
 import { Link } from 'react-router-dom';
+
+import { Document, Page } from "react-pdf";
 
 const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
@@ -18,6 +20,13 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
     const [modalFile, setModalFile] = useState({show: "", data: ""});
 
+    const [modalEdit, setModalEdit] = useState({show: false, data: ""});
+
+    const allowExtension = ["jpg", "png"];
+
+    // pdf state
+    const [numPages, setNumPages] = useState(null);
+    const [pageNumber, setPageNumber] = useState(1);
     useEffect(() => {
         axios({
             method: 'post',
@@ -35,6 +44,10 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
             setLoading(false);
         })
     },[dataCount, dataPengajuan])
+
+    const onDocumentLoadSuccess = ({numPages}) => {
+        setNumPages(numPages);
+    }
 
     const deleteAlat = (id) => {
         Swal.fire({
@@ -69,8 +82,13 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
     const showFileUpload = (file) => {
         let ekstensi = file.split(".")[1];
-        if (ekstensi === "jpg") { 
-            setModalFile({...modalFile, show: "jpg", data: file})
+        // if (ekstensi === "jpg") { 
+        //     setModalFile({...modalFile, show: "jpg", data: file})
+        // }
+        if (ekstensi == "pdf") {
+            setModalFile({...modalFile, show: "pdf", data: file});
+        } else if (allowExtension.includes(ekstensi)) {
+            setModalFile({...modalFile, show: ekstensi, data: file})
         }
     }
 
@@ -131,7 +149,7 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
                                                 {
                                                     dataPengajuan.STATUS === '-' || dataPengajuan.STATUS === 'Pengajuan Ditolak' ? (
                                                         <>
-                                                            <Button variant="secondary" className="mt-2">Edit</Button>
+                                                            <Button variant="secondary" className="mt-2" onClick={() => setModalEdit({show: true, data: data})}>Edit</Button>
                                                             <Button variant="danger" className="mt-2" onClick={() => deleteAlat(data.ID)}>Hapus</Button>
                                                         </>
                                                     ) : (<div></div>)
@@ -155,21 +173,42 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
             {/* modal show file jpg*/}
             <Modal
-                size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
-                show={modalFile.show === "jpg" ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
+                show={allowExtension.includes(modalFile.show) ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
                 centered
             >
                 <Modal.Body>
-                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} fluid />
+                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} className="w-100 h-100" />
                 </Modal.Body>
             </Modal>
 
-             {/* modal detail alat pengajuan */}
-             <DetailAlatPengajuan 
+            {/* modal show file pdf */}
+            <Modal
+                size='lg'
+                aria-labelledby="contained-modal-title-vcenter"
+                show={modalFile.show === "pdf" ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
+                centered
+            >
+                <Modal.Body style={{height: "500px"}}>
+                    <embed 
+                        src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} 
+                        className="w-100 h-100"
+                        type="application/pdf" />
+                </Modal.Body>
+            </Modal>
+
+            {/* modal detail alat pengajuan */}
+            <DetailAlatPengajuan 
                 show={rincianAlat.show}
                 onHide={() => setRincianAlat({...rincianAlat, show: false})}
                 data={rincianAlat.data}
+            />
+
+            {/* modal edit alat baru */}
+            <EditAlatBaru 
+                show={modalEdit.show}
+                onHide={() => setModalEdit({...modalEdit, show: false})}
+                data={modalEdit.data}
             />
 
         </div>

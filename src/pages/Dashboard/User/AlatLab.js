@@ -14,7 +14,7 @@ const AlatLab = (props) => {
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatKondisiBaik',
-            data: {labID: props.data.labID},
+            data: {labID: props.data.labData.ID},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
@@ -34,7 +34,7 @@ const AlatLab = (props) => {
                 <Breadcrumb.Item>Informasi Alat Lab Tersedia</Breadcrumb.Item>
             </Breadcrumb>
 
-            <h2>Alat Lab Tersedia</h2>
+            <h2>Alat Tersedia Lab {props.data.labData.NAMA}</h2>
             {
                 loading ? <div>Loading ... </div> : dataAlat === null ? (<div>Belum Ada Alat Di Lab Ini</div>) : (
                     <div className="mt-2">
@@ -53,7 +53,7 @@ const AlatLab = (props) => {
                             <tbody>
                                 {
                                     dataAlat.map((data, index) => {
-                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'info' : 'primary';
+                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'warning' : data.STATUS_ALAT === 'Dipinjam' ? 'primary' : 'info';
                                         let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
                                         
                                         return (

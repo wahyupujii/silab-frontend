@@ -17,9 +17,15 @@ import Laboratorium from './Laboratorium';
 import PersetujuanPengajuan from './PersetujuanPengajuan';
 import PemindahanAlat from './PemindahanAlat';
 import PersetujuanPerbaikan from "./PersetujuanPerbaikan";
+import PersetujuanPemindahan from './PersetujuanPemindahan';
 
 const SuperUser = ({dataUser}) => {
 	const [linkActive, setLinkActive] = useState(window.location.pathname);
+
+    const logout = () => {
+        sessionStorage.removeItem("superUser");
+        localStorage.clear();
+    }
 
 	return (
 		<div style={{
@@ -59,11 +65,13 @@ const SuperUser = ({dataUser}) => {
                                 <List icon={PengajuanAlatIcon} title="Persetujuan Pengajuan Alat" path="/mis105/SILAB/dashboard/persetujuan-pengajuan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-pengajuan")} />
                                 <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                                 <List icon={PeminjamanAlatIcon} title="Persetujuan Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/persetujuan-perbaikan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-perbaikan")} />
+                                <List icon={PeminjamanAlatIcon} title="Persetujuan Pemindahan Alat" path="/mis105/SILAB/dashboard/persetujuan-pemindahan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-pemindahan")} />
                             </>
                         ) : (
                             <>  
                             {/* kaprodi, kadep, asdir */}
                                 <List icon={PengajuanAlatIcon} title="Persetujuan Pengajuan Alat" path="/mis105/SILAB/dashboard/persetujuan-pengajuan" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/persetujuan-pengajuan")} />
+                                <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                             </>
                         )
                     }
@@ -78,7 +86,7 @@ const SuperUser = ({dataUser}) => {
                     <div className={`d-flex h-100 ${style.custom_container}`}>
                         <div className="account d-flex align-items-center w-100 justify-content-end">
                         <DropdownButton id="dropdown-basic-button" title={dataUser.NAMA}>
-                            <Dropdown.Item href="/mis105/SILAB" onClick={() => sessionStorage.removeItem("superUser")}>Log Out</Dropdown.Item>
+                            <Dropdown.Item href="/mis105/SILAB" onClick={() => logout()}>Log Out</Dropdown.Item>
                         </DropdownButton>
                         </div>
                     </div>
@@ -106,6 +114,8 @@ const SuperUser = ({dataUser}) => {
                                 <PemindahanAlat dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/persetujuan-perbaikan" ? (
                                 <PersetujuanPerbaikan dataUser={dataUser} />
+                            ) : window.location.pathname === "/mis105/SILAB/dashboard/persetujuan-pemindahan" ? (
+                                <PersetujuanPemindahan dataUser={dataUser} />
                             ) : <div className="d-flex justify-content-center align-items-center">404 Not Found</div>
                         }
                     </div>

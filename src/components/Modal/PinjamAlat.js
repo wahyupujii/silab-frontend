@@ -4,7 +4,7 @@ import axios from "axios";
 
 const PinjamAlat = ({show, onHide, count, dataUser}) => {
     const [inputs, setInputs] = useState({
-        nama: "",
+        keperluan_pinjam: "",
         tanggal_pinjam: "",
         tanggal_kembali: "",
         alat_lab : []
@@ -13,31 +13,7 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
     const [alatLab, setAlatLab] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    let dataLab;
-    if (dataUser.NAMA_ROLE === "Dosen") {
-        dataLab = JSON.parse(localStorage.getItem("labByDosen"));
-    } else if (dataUser.NAMA_ROLE === "Kepala Laboratorium") {
-        dataLab = JSON.parse(localStorage.getItem("labByKalab"));
-    } else if (dataUser.NAMA_ROLE === "Teknisi Laboratorium") {
-        dataLab = JSON.parse(localStorage.getItem("labByTeklab"));
-    }
-    
-    useEffect(() => {
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatStatusAda',
-            data: { laboratorium_id: parseInt(dataLab[0].ID) },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-            }
-        }).then(result => {
-            setAlatLab(result.data.data);
-            setLoading(false)
-        }).catch(() => {
-            setAlatLab(null);
-            setLoading(false)
-        })
-    }, [show])
+    let dataLab = JSON.parse(localStorage.getItem("labByJurusan"));
 
     const pilihLabArea = (e) => {
         e.preventDefault();
@@ -50,10 +26,6 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             }).then(result => {
-                // let temp = [];
-                // result.data.data.map(obj => {
-                //     temp.push({...obj, jumlahDipinjam: 0})
-                // })
                 setAlatLab(result.data.data);
                 setLoading(false)
             }).catch((err) => {
@@ -67,7 +39,8 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
     const pinjamAlat = (alat) => {
         let alatTerpilih = inputs.alat_lab;
         if (alatTerpilih.includes(alat.ID)) {
-            inputs.alat_lab.pop(alat.ID);
+            let filter = alatTerpilih.filter((item) => item !== alat.ID);
+            setInputs({...inputs, alat_lab: [...filter]});
         } else {
             setInputs({...inputs, alat_lab: [...inputs.alat_lab, alat.ID]})
         }
@@ -91,7 +64,6 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
         }).catch(() => {
             // swal gagal meminjam alat
         })
-
     }
 
     return (
@@ -103,11 +75,12 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                 <Modal.Body>
                     <div className='d-flex justify-content-between'>
                         <Form.Group className="mb-3">
-                            <Form.Label>Nama Peminjaman</Form.Label>
+                            <Form.Label>Keperluan Pinjam</Form.Label>
                             <Form.Control
+                                autoComplete='off'
                                 type="text"
-                                name='nama_peminjaman'
-                                placeholder='Nama Peminjaman'
+                                name='keperluan_pinjam'
+                                placeholder='Keperluan Pinjam'
                                 onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
                                 required
                             />
@@ -131,33 +104,19 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                             />
                         </Form.Group>
                     </div>
-                    
-                    {
-                        dataLab.length < 2 ? (
-                            <Form.Group>
-                                <Form.Label>Area Lab</Form.Label>
-                                <Form.Control
-                                    value={dataLab[0].NAMA}
-                                    readOnly
-                                ></Form.Control>
-                            </Form.Group>
-                        ) : (
-                            <Form.Group>
-                                <Form.Label>Pilih Area Lab</Form.Label>
-                                <Form.Select onChange={pilihLabArea} required>
-                                    <option value="N/A">Pilih Lab Area</option>
-                                    {
-                                        dataLab.map(lab => {
-                                            return (
-                                                <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
-                                            )
-                                        })
-                                    }
-                                </Form.Select>
-                            </Form.Group>
-                        )
-                    }
-
+                    <Form.Group>
+                        <Form.Label>Pilih Area Lab</Form.Label>
+                        <Form.Select onChange={pilihLabArea} required>
+                            <option value="N/A">Pilih Lab Area</option>
+                            {
+                                dataLab.map(lab => {
+                                    return (
+                                        <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
+                                    )
+                                })
+                            }
+                        </Form.Select>
+                    </Form.Group>
                     <div className="d-flex justify-content-between mt-2">
                         {
                             loading ? (<div>Loading ... </div>) : (
@@ -167,7 +126,7 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                                             <th>#</th>
                                             <th>Gambar</th>
                                             <th>Nama Alat</th>
-                                            <th>Detail Alat</th>
+                                            <th>Pilih Alat</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -184,10 +143,13 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                                                         </td>
                                                         <td className='align-middle'>{alat.NAMA}</td>
                                                         <td className='align-middle'>
-                                                            <Button variant="primary">Detail</Button>
-                                                        </td>
-                                                        <td className='align-middle'>
-                                                            <Button variant="outline-primary" onClick={() => pinjamAlat(alat)}>Pinjam</Button>
+                                                            {
+                                                                inputs.alat_lab.includes(alat.ID) ? (
+                                                                    <Button variant="success" onClick={() => pinjamAlat(alat)}>Dipilih</Button>
+                                                                ) : !inputs.alat_lab.includes(alat.ID) ? (
+                                                                    <Button variant="outline-primary" onClick={() => pinjamAlat(alat)}>Pinjam</Button>
+                                                                ) : (<span></span>)
+                                                            }
                                                         </td>
                                                     </tr>
                                                 )

@@ -51,31 +51,36 @@ const PeminjamanAlat = ({dataUser}) => {
                                 <Table striped>
                                     <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th>Nama Peminjaman</th>
-                                            <th>Tanggal Pinjam</th>
-                                            <th>Tanggal Kembali</th>
-                                            <th>Status</th>
-                                            <th>Detail</th>
+                                            <th className="align-middle">#</th>
+                                            <th className="align-middle">Keperluan Pinjam</th>
+                                            <th className="align-middle">Tanggal Pinjam</th>
+                                            <th className="align-middle">Tanggal Kembali</th>
+                                            <th className="align-middle">Status Pinjam</th>
+                                            <th className="align-middle">Status Kembali</th>
+                                            <th className="align-middle">Detail</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
                                             dataPeminjaman.map((data, index) => {
-                                                let status = data.STATUS === 'Ditolak KaLab' ? 'danger' : data.STATUS === 'Disetujui KaLab' ? 'success' : 'primary';
+                                                let statusPinjam = data.STATUS_PINJAM === 'Ditolak KaLab' ? 'danger' : data.STATUS_PINJAM === 'Disetujui KaLab' ? 'success' : 'primary';
+                                                let statusKembali = data.STATUS_KEMBALI === '-' ? 'primary' : data.STATUS_KEMBALI === 'Dikembalikan' ? 'success' : 'danger';
                                                 return (
                                                     <tr key={data.ID}>
                                                         <td className='align-middle'>{index+1}</td>
-                                                        <td className='align-middle'>{data.NAMA_PEMINJAMAN}</td>
+                                                        <td className='align-middle'>{data.KEPERLUAN_PINJAM}</td>
                                                         <td className='align-middle'>{data.TANGGAL_PINJAM}</td>
                                                         <td className='align-middle'>{data.TANGGAL_KEMBALI}</td>
                                                         <td className='align-middle'>
-                                                            <Badge bg={status}>{data.STATUS}</Badge>{' '}    
+                                                            <Badge bg={statusPinjam}>{data.STATUS_PINJAM}</Badge>{' '}    
+                                                        </td>
+                                                        <td className='align-middle'>
+                                                            <Badge bg={statusKembali}>{data.STATUS_KEMBALI}</Badge>{' '}    
                                                         </td>
                                                         <td className='align-middle'>
                                                             <Button 
                                                                 variant="primary"
-                                                                onClick={() => setDetailPeminjaman({show: true, data: data.NAMA_PEMINJAMAN})}
+                                                                onClick={() => setDetailPeminjaman({show: true, data: data})}
                                                             >Detail</Button>
                                                         </td>
                                                     </tr>
@@ -102,6 +107,7 @@ const PeminjamanAlat = ({dataUser}) => {
                     show={detailPeminjaman.show}
                     onHide={() => setDetailPeminjaman({...detailPeminjaman, show: false})}
                     data={detailPeminjaman.data}
+                    count={() => setDataCount(dataCount+1)}
                 />
 
             </div>

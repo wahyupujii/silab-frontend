@@ -14,6 +14,7 @@ const LabArea = ({dataUser}) => {
     const [getLabID, setLabID] = useState("");
     
     useEffect(() => {
+        getLabByJurusan();
         if (dataUser.NAMA_ROLE === "Teknisi Laboratorium") {
             getLabByTekLab();
         } else if (dataUser.NAMA_ROLE === "Kepala Laboratorium") {
@@ -21,6 +22,19 @@ const LabArea = ({dataUser}) => {
         }
 
     }, [])
+
+    const getLabByJurusan = () => {
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/laboratory.php?function=getLabByJurusan',
+            data: {jurusan: dataUser.JURUSAN_NOMOR},
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            localStorage.setItem("labByJurusan", JSON.stringify(result.data.data));
+        }).catch()
+    }
 
     const getLabByTekLab = () => {
         axios({
@@ -36,11 +50,8 @@ const LabArea = ({dataUser}) => {
                 setLabID(result.data.data[0].ID);
                 setDataLab(result.data.data[0]);
             }
-            setDataLab(result.data.data);
-            // check localStorage not empty
-            let key = localStorage.key("");
-            localStorage.removeItem(key);
             localStorage.setItem("labByTeklab", JSON.stringify(result.data.data));
+            setDataLab(result.data.data);
             setLoading(false);
         }).catch()
     }
@@ -54,9 +65,6 @@ const LabArea = ({dataUser}) => {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(result => {
-            // check localStorage not empty
-            let key = localStorage.key("");
-            localStorage.removeItem(key);
             localStorage.setItem("labByKalab", JSON.stringify(result.data.data));
             setLabID(result.data.data[0].ID);
             setLoading(false);
@@ -122,14 +130,6 @@ const LabArea = ({dataUser}) => {
             }
         </>
     )
-}
-
-const MultipleLab = () => {
-    return
-}
-
-const SingleLab = () => {
-    return
 }
 
 export default LabArea

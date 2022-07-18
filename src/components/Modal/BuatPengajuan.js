@@ -60,6 +60,7 @@ const BuatPengajuan = ({ show, onHide, dataUser, count }) => {
                     <Form.Group className="mb-3">
                         <Form.Label>Nama Pengajuan</Form.Label>
                         <Form.Control
+                            autoComplete='off'
                             type="text"
                             placeholder='Nama Pengajuan'
                             name="nama"

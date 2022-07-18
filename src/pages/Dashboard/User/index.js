@@ -8,11 +8,15 @@ import { InformasiAlatIcon, PengajuanAlatIcon, PeminjamanAlatIcon } from '../../
 
 // content component User biasa
 import LabArea from './LabArea';
-import PengajuanAlat from './PengajuanAlat';
 import PeminjamanAlat from './PeminjamanAlat';
 
 const User = ({dataUser}) => {
     const [linkActive, setLinkActive] = useState(window.location.pathname);
+
+    const logout = () => {
+        sessionStorage.removeItem("user");
+        localStorage.clear();
+    }
 
     return (
         <div style={{
@@ -35,7 +39,6 @@ const User = ({dataUser}) => {
                         </span>
                     </li>
                     <List icon={InformasiAlatIcon} title="Informasi Alat" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
-                    <List icon={PengajuanAlatIcon} title="Pengajuan Alat" path="/mis105/SILAB/dashboard/pengajuan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pengajuan-alat")} />
                     <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                 </ul>
             </div>
@@ -48,7 +51,7 @@ const User = ({dataUser}) => {
                     <div className={`d-flex h-100 ${style.custom_container}`}>
                         <div className="account d-flex align-items-center w-100 justify-content-end">
                         <DropdownButton id="dropdown-basic-button" title={dataUser.NAMA}>
-                            <Dropdown.Item href="/mis105/SILAB" onClick={() => sessionStorage.removeItem("user")}>Log Out</Dropdown.Item>
+                            <Dropdown.Item href="/mis105/SILAB" onClick={() => logout()}>Log Out</Dropdown.Item>
                         </DropdownButton>
                         </div>
                     </div>
@@ -60,8 +63,6 @@ const User = ({dataUser}) => {
                         {
                             window.location.pathname === "/mis105/SILAB/dashboard" ? (
                                 <LabArea dataUser={dataUser} />
-                            ) : window.location.pathname === "/mis105/SILAB/dashboard/pengajuan-alat" ? (
-                                <PengajuanAlat dataUser={dataUser} />
                             ) : window.location.pathname === "/mis105/SILAB/dashboard/peminjaman-alat" ? (
                                 <PeminjamanAlat dataUser={dataUser} />
                             ) : <div className="d-flex justify-content-center align-items-center">404 Not Found</div>

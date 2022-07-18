@@ -69,7 +69,7 @@ const AlatLabTersedia = (props) => {
                             <tbody>
                                 {
                                     dataAlat.map((data, index) => {
-                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'info' : 'primary';
+                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'warning' : data.STATUS_ALAT === 'Dipinjam' ? 'primary' : 'info';
                                         let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
                                         return (
                                             <tr key={data.ID}>

@@ -20,7 +20,6 @@ const Login = () => {
             }
         })
         .then(result => {
-            console.log(result)
             if (result.data === "auth error") {
                 Swal.fire({
                     icon: 'error',
@@ -43,8 +42,9 @@ const Login = () => {
             }
         })
         .then(result => {
+            // console.log(result)
             // kondisi role superUser
-            const condition = ["Teknisi Laboratorium", "Kepala Laboratorium", "Kepala Prodi D3", "Kepala Prodi D4", "Kepala Departemen", "Asisten Direktur 2"];
+            const condition = ["Teknisi Laboratorium", "Kepala Laboratorium", "Kepala Prodi D3", "Kepala Prodi D4", "Kepala Departemen", "Bagian Administrasi Umum dan Keuangan"];
             if (result.data.data.length > 1 || result.data.data[0].NAMA_ROLE === condition[0]) {
                 result.data.data.map((data) => {
                     let test = condition.some(el => JSON.stringify(data).includes(el));
@@ -52,15 +52,21 @@ const Login = () => {
                         // set pengaturan superuser
                         sessionStorage.removeItem("user");
                         sessionStorage.setItem("superUser", JSON.stringify(data));
-                        return;
+                        
+                        // cek jika yang login kaprodi
+                        // console.log((data.NAMA_ROLE === "Kepala Prodi D3") || (data.NAMA_ROLE === "Kepala Prodi D4"))
+                        if ((data.NAMA_ROLE === "Kepala Prodi D3") || (data.NAMA_ROLE === "Kepala Prodi D4")) {
+                            window.location.pathname = "/mis105/SILAB/dashboard/persetujuan-pengajuan"
+                            return;
+                        }
                     }
                 })
+                window.location.pathname = "/mis105/SILAB/dashboard";
             } else {
                 sessionStorage.removeItem("superUser");
                 sessionStorage.setItem("user", JSON.stringify(result.data.data[0]));
+                window.location.pathname = "/mis105/SILAB/dashboard";
             }
-            window.location.pathname = "/mis105/SILAB/dashboard";
-            // console.log(result);
         })
         .catch(() => {
             Swal.fire({

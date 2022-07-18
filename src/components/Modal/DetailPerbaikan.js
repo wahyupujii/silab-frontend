@@ -47,9 +47,11 @@ const DetailPerbaikan = ({show, onHide, data}) => {
                     <Form.Control as="textarea" rows={3} value={data.CATATAN_KERUSAKAN} readOnly></Form.Control>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Daftar Alat</Form.Label>
+                    {dataAlat !== null ? (<Form.Label>Daftar Alat</Form.Label>) : (<div></div>)}
                     {
-                        loading ? (<span>Loading ... </span>) : (
+                        loading ? (<span>Loading ... </span>) : dataAlat === null ? 
+                        (<div className="text-danger">Alat yang rusak sebelumnya sudah tidak ada kaitan dengan perbaikan ini, karena perbaikan ini Ditolak KaLab</div>) : 
+                        (
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
@@ -59,7 +61,6 @@ const DetailPerbaikan = ({show, onHide, data}) => {
                                 </thead>
                                 <tbody>
                                     {
-                                        dataAlat === null ? (<div></div>) : 
                                         dataAlat.map((alat, index) => {
                                             return (
                                                 <tr key={alat.ID}>

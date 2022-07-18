@@ -46,7 +46,7 @@ const SemuaAlatDiLab = (props) => {
             </Breadcrumb>
             <div className="d-flex justify-content-between">
                 <h2>Informasi Semua Alat Lab</h2>
-                <Dropdown>
+                {/* <Dropdown>
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         Pilih Alat Sesuai Status
                     </Dropdown.Toggle>
@@ -56,7 +56,7 @@ const SemuaAlatDiLab = (props) => {
                         <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                         <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                     </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown> */}
             </div>
 
             <div className="mt-2">
@@ -77,7 +77,7 @@ const SemuaAlatDiLab = (props) => {
                             <tbody>
                                 {
                                     dataAlat.map((data, index) => {
-                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'info' : 'primary';
+                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'warning' : data.STATUS_ALAT === 'Dipinjam' ? 'primary' : 'info';
                                         let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
                                         return (
                                             <tr key={data.ID}>
@@ -108,7 +108,7 @@ const SemuaAlatDiLab = (props) => {
 
             {/* modal detail alat yang diputihkan */}
             <DetailAlatLab 
-                type="secondary"
+                type={props.dataUser.NAMA_ROLE === "Teknisi Laboratorium" ? "primary" : "secondary"}
                 show={modal.show}
                 onHide={() => setModal({...modal, show: false})}
                 data={{dataAlat: modal.detailAlat, dataUser: props.dataUser, labID: props.data.labID}} 

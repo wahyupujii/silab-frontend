@@ -1,79 +1,74 @@
 import React, {useState, useEffect} from 'react'
-import {Modal, Button, Form, Table} from "react-bootstrap";
-import axios from 'axios';
-import Swal from "sweetalert2";
+import {Modal, Form, Table, Button} from 'react-bootstrap';
+import axios from "axios";
 
-const SetujuPerbaikan = ({show, onHide, data, count}) => {
-    const [alatPerbaikan, setAlatPerbaikan] = useState([]);
+const SetujuPemindahan = ({show, onHide, data, count}) => {
+    const [alatPemindahan, setAlatPemindahan] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     useEffect(() => {
         if (show) {
             axios({
                 method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPerbaikan.php?function=getAlatByNamaPerbaikan',
+                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=getAlatByNamaPemindahan',
                 data: { 
-                    nama_perbaikan: data.dataPerbaikan.NAMA
+                    nama_pemindahan: data.dataPemindahan.NAMA_PEMINDAHAN
                 },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             }).then(result => {
-                setAlatPerbaikan(result.data.data);
+                setAlatPemindahan(result.data.data);
                 setLoading(false)
             }).catch(() => {
-                // swal
-                setAlatPerbaikan(null);
+                setAlatPemindahan(null);
                 setLoading(false)
             })
         }
     }, [show])
 
-    const setujuiPerbaikan = () => {
+    const setujuiPemindahan = () => {
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPerbaikan.php?function=setujuiPerbaikan',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=setujuiPemindahan',
             data: { 
-                perbaikan_id: data.dataPerbaikan.ID,
                 kalab_nomor: data.dataUser.NOMOR,
-                tanggal_persetujuan: today
+                pemindahan_id: data.dataPemindahan.ID,
+                nama_pemindahan: data.dataPemindahan.NAMA_PEMINDAHAN,
+                tanggal_persetujuan: today,
+                lab_tujuan: data.dataPemindahan.LAB_TUJUAN
             },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(() => {
-            count();
             onHide();
+            count();
         }).catch(() => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Menyetujui Pengajuan Perbaikan'
-            })
+            
         })
     }
 
-    const tolakPerbaikan = () => {
+    const tolakPemindahan = () => {
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPerbaikan.php?function=tolakPerbaikan',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=tolakPemindahan',
             data: { 
-                perbaikan_id: data.dataPerbaikan.ID,
                 kalab_nomor: data.dataUser.NOMOR,
-                tanggal_persetujuan: today
+                pemindahan_id: data.dataPemindahan.ID,
+                nama_pemindahan: data.dataPemindahan.NAMA_PEMINDAHAN,
+                tanggal_persetujuan: today,
             },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then(() => {
-            count();
             onHide();
+            count();
         }).catch(() => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Menolak Pengajuan Perbaikan'
-            })
+            
         })
     }
 
@@ -86,20 +81,20 @@ const SetujuPerbaikan = ({show, onHide, data, count}) => {
                 keyboard={false}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Detail Perbaikan</Modal.Title>
+                    <Modal.Title>Detail Pemindahan</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Group className='mb-3'>
-                        <Form.Label>Nama Perbaikan</Form.Label>
+                        <Form.Label>Nama Pemindahan</Form.Label>
                         <Form.Control
-                            value={data.dataPerbaikan.NAMA}
+                            value={data.dataPemindahan.NAMA_PEMINDAHAN}
                             readOnly
                         ></Form.Control>
                     </Form.Group>
                     <Form.Group className='mb-3'>
                         <Form.Label>Daftar Alat</Form.Label>
                         {
-                            loading ? (<div>Loading ... </div>) : alatPerbaikan === null ? (<span>Belum ada alat yang diperbaiki</span>) : (
+                            loading ? (<div>Loading ... </div>) : alatPemindahan === null ? (<span>Belum ada alat yang diperbaiki</span>) : (
                                 <Table striped bordered hover>
                                     <thead>
                                         <tr>
@@ -109,7 +104,7 @@ const SetujuPerbaikan = ({show, onHide, data, count}) => {
                                     </thead>
                                     <tbody>
                                         {
-                                            alatPerbaikan.map((alat, index) => {
+                                            alatPemindahan.map((alat, index) => {
                                                 return (
                                                     <tr>
                                                         <td>{index+1}</td>
@@ -126,13 +121,13 @@ const SetujuPerbaikan = ({show, onHide, data, count}) => {
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger" onClick={() => tolakPerbaikan()}>Tolak Perbaikan</Button>
-                    <Button variant="success" onClick={() => setujuiPerbaikan()}>Setuju Perbaikan</Button>
+                    <Button variant="danger" onClick={() => tolakPemindahan()}>Tolak Pemindahan</Button>
+                    <Button variant="success" onClick={() => setujuiPemindahan()}>Setuju Pemindahan</Button>
                     <Button variant="primary" onClick={() => onHide()}>Close</Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal>        
         </>
     )
 }
 
-export default SetujuPerbaikan
+export default SetujuPemindahan

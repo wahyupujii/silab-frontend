@@ -4,6 +4,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const TambahAlatBaru = ({ show, onHide, count, data }) => {
+    let formDataAlat = new FormData();
     const [inputs, setInputs] = useState({
         harga_satuan: 0,  // 1000000
         jumlah: 0,
@@ -15,16 +16,27 @@ const TambahAlatBaru = ({ show, onHide, count, data }) => {
         totalHarga: ""
     })
 
+    const uploadFile = (e) => {
+        let allowExtensi = ['png', 'jpg', 'pdf'];
+        let extension = e.name.split(".")[1];
+        if (allowExtensi.includes(extension)) {
+            formDataAlat.append('FILE', e);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                text: 'Ekstensi file tidak diperbolehkan'
+            })
+            formDataAlat.delete("FILE");
+        }
+    }
+
     const tambahAlat = (e) => {
         e.preventDefault();
-
-        let formDataAlat = new FormData();
         formDataAlat.append('NAMA', inputs.nama);
         formDataAlat.append('SPESIFIKASI', inputs.spesifikasi);
         formDataAlat.append('HARGA_SATUAN', inputs.harga_satuan);
         formDataAlat.append('JUMLAH', inputs.jumlah);
         formDataAlat.append('TOTAL_HARGA', inputs.total_harga);
-        formDataAlat.append('FILE', inputs.file);
         formDataAlat.append('PENGAJUAN_ID', data.pengajuanID)
 
         axios({
@@ -38,12 +50,13 @@ const TambahAlatBaru = ({ show, onHide, count, data }) => {
             onHide(false);
             count();
             setHarga({...harga, hargaSatuan: "", totalHarga: ""});
-        }).catch(() => {
+        }).catch((err) => {
             Swal.fire({
                 icon: 'error',
                 title: "Gagal menambahkan alat baru",
                 text: 'Terdapat kesalahan inputan / isian belum valid'
             })
+            console.log("err", err)
             formDataAlat.delete("FILE");
         })        
     }
@@ -150,7 +163,8 @@ const TambahAlatBaru = ({ show, onHide, count, data }) => {
                         <Form.Control 
                             type="file" 
                             name="file" 
-                            onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.files[0]})} 
+                            // onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.files[0]})} 
+                            onChange={(e) => uploadFile(e.target.files[0])}
                             required={true}
                         />
                     </Form.Group>

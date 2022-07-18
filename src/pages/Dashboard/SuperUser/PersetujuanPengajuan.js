@@ -17,6 +17,8 @@ const PersetujuanPengajuan = ({dataUser}) => {
             persetujuanKaprodi();
         } else if (dataUser.NAMA_ROLE === 'Kepala Departemen') {
             persetujuanKadep();
+        } else if (dataUser.NAMA_ROLE === 'Bagian Administrasi Umum dan Keuangan') {
+            persetujuanAsdir();
         }
     }, count)
 
@@ -90,6 +92,25 @@ const PersetujuanPengajuan = ({dataUser}) => {
         }).catch();
     }
 
+    const persetujuanAsdir = () => {
+        console.log(dataUser)
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=getPengajuanAsdir',
+            data: { jurusan: dataUser.JURUSAN_NOMOR },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(result => {
+            setDataPengajuan(result.data.data);
+            setCount(result.data.data.length);
+            setLoading(false);
+        }).catch(() => {
+            setDataPengajuan(null);
+            setLoading(false);
+        })
+    }
+    
     return (
         <>
             <div className="w-100 p-3">

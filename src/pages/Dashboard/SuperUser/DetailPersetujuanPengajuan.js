@@ -37,7 +37,7 @@ const DetailPersetujuanPengajuan = (props) => {
         if (props.data.dataUser.NAMA_ROLE === "Kepala Laboratorium") { setuju = opsiSetuju[0] }
         else if (props.data.dataUser.NAMA_ROLE === "Kepala Prodi D3" || props.data.dataUser.NAMA_ROLE === "Kepala Prodi D4") { setuju = opsiSetuju[1]}
         else if (props.data.dataUser.NAMA_ROLE === "Kepala Departemen") { setuju = opsiSetuju[2]}
-        else if (props.data.dataUser.NAMA_ROLE === "Asisten Direktur 2") { setuju = opsiSetuju[3]}
+        else if (props.data.dataUser.NAMA_ROLE === "Bagian Administrasi Umum dan Keuangan") { setuju = opsiSetuju[3]}
         Swal.fire({
             icon: 'question',
             title: 'Anda yakin ingin MENYETUJUI pengajuan ini ? ',
@@ -120,6 +120,32 @@ const DetailPersetujuanPengajuan = (props) => {
         }).catch(err => {console.error(err)})
     }
 
+    const pengadaanSelesai = () => {
+        Swal.fire({
+            icon: 'question',
+            title: 'Anda yakin ingin MENYELESAIKAN PROSES PENGAJUAN ini ? ',
+            text: 'Data alat baru yang diajukan akan langsung menjadi data alat laboratorium',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPengajuan.php?function=selesaikanPengajuan',
+                    data: {
+                        pegawai_nomor: props.data.dataUser.NOMOR,
+                        pengajuan_id: props.data.detail.ID,
+                        // tanggal_persetujuan: today
+                    },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                })
+            }
+        })
+    }
+
     const showFile = (file) => {
         let ekstensi = file.split(".")[1];
         if (ekstensi === "jpg") { 
@@ -131,12 +157,25 @@ const DetailPersetujuanPengajuan = (props) => {
         <div className='w-100'>
             <div className="d-flex align-items-center justify-content-between">
                 <h2 className="mx-3">{props.data.detail.NAMA_PENGAJUAN}</h2>
-                <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: props.data.detail.NAMA_PENGAJUAN})}>Lihat Rincian Semua Alat</Button>
+                {
+                    props.data.detail.STATUS === "Dilakukan Pengadaan" ? (
+                        <div className="d-flex justify-content-end">
+                            <Button variant="success mx-2">Konfirmasi Pengadaan Selesai</Button>
+                            <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: props.data.detail.NAMA_PENGAJUAN})}>Lihat Rincian Semua Alat</Button>
+                        </div>
+                ) : <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: props.data.detail.NAMA_PENGAJUAN})}>Lihat Rincian Semua Alat</Button>
+                }
             </div>
             <div className='d-flex align-items-center mt-3'>
-                <span className='mx-3'>Setujui : </span>
-                <Button variant="outline-success" className='mx-3' onClick={setuju} >Ya</Button>
-                <Button variant="outline-danger" className='mx-3' onClick={tidakSetuju} >Tidak</Button>
+                {
+                    props.data.detail.STATUS !== "Dilakukan Pengadaan" ? (
+                        <>
+                            <span className='mx-3'>Setujui : </span>
+                            <Button variant="outline-success" className='mx-3' onClick={setuju} >Ya</Button>
+                            <Button variant="outline-danger" className='mx-3' onClick={tidakSetuju} >Tidak</Button>
+                        </>
+                    ) : (<div></div>)
+                }
             </div>
             <div className='d-flex flex-wrap justify-content-between px-4 py-3' style={{maxWidth: '100%', background: 'white'}}>
                 {

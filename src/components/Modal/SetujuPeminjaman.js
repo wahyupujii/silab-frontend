@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Modal, Button, Form, Table} from "react-bootstrap";
+import {Modal, Button, Form, Table, Image} from "react-bootstrap";
 import axios from 'axios';
 import Swal from "sweetalert2";
 
@@ -11,9 +11,9 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
         if (show) {
             axios({
                 method: 'post',
-                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=getAlatByNamaPeminjaman',
+                url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=getAlatByKeperluanPinjam',
                 data: { 
-                    nama_peminjaman: data.NAMA_PEMINJAMAN
+                    keperluan_pinjam: data.KEPERLUAN_PINJAM
                  },
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -21,7 +21,6 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
             }).then(result => {
                 setAlatDipinjam(result.data.data);
                 setLoading(false)
-                // console.log(result)
             }).catch(() => {
                 // swal
                 setAlatDipinjam(null);
@@ -35,7 +34,7 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=setujuiPeminjaman',
             data: { 
-                nama_peminjaman: data.NAMA_PEMINJAMAN
+                keperluan_pinjam: data.KEPERLUAN_PINJAM
              },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -85,9 +84,9 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Group className='mb-3'>
-                        <Form.Label>Nama Peminjaman</Form.Label>
+                        <Form.Label>Keperluan Pinjam</Form.Label>
                         <Form.Control
-                            value={data.NAMA_PEMINJAMAN}
+                            value={data.KEPERLUAN_PINJAM}
                             readOnly
                         ></Form.Control>
                     </Form.Group>
@@ -109,6 +108,7 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
                                     <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Gambar</th>
                                             <th>Nama Alat</th>
                                         </tr>
                                     </thead>
@@ -117,8 +117,11 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
                                             alatDipinjam.map((alat, index) => {
                                                 return (
                                                     <tr>
-                                                        <td>{index+1}</td>
-                                                        <td>{alat.NAMA}</td>
+                                                        <td className="align-middle">{index+1}</td>
+                                                        <td className="align-middle">
+                                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
+                                                        </td>
+                                                        <td className="align-middle">{alat.NAMA}</td>
                                                     </tr>
                                                 )
                                             })
@@ -131,8 +134,14 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger" onClick={() => tolakPeminjaman()}>Tolak Peminjaman</Button>
-                    <Button variant="success" onClick={() => setujuiPeminjaman()}>Setuju Peminjaman</Button>
+                    {
+                        data.STATUS_PINJAM === "Menunggu ACC KaLab" ? (
+                            <>
+                                <Button variant="danger" onClick={() => tolakPeminjaman()}>Tolak Peminjaman</Button>
+                                <Button variant="success" onClick={() => setujuiPeminjaman()}>Setuju Peminjaman</Button>
+                            </>
+                        ) : (<div></div>)
+                    }
                     <Button variant="primary" onClick={() => onHide()}>Close</Button>
                 </Modal.Footer>
             </Modal>
