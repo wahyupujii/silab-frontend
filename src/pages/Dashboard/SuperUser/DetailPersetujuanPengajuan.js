@@ -9,9 +9,11 @@ import { DetailAlatPengajuan } from '../../../components';
 const DetailPersetujuanPengajuan = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [modalFile, setModalFile] = useState({show: "", data: ""})
     const [rincianAlat, setRincianAlat] = useState({show: false, data: ""})
-    
+
+    const [modalFile, setModalFile] = useState({show: "", data: ""});
+    const allowExtension = ["jpg", "png"];
+
     useEffect(() => {
         axios({
             method: 'post',
@@ -158,10 +160,12 @@ const DetailPersetujuanPengajuan = (props) => {
         })
     }
 
-    const showFile = (file) => {
+    const showFileUpload = (file) => {
         let ekstensi = file.split(".")[1];
-        if (ekstensi === "jpg") { 
-            setModalFile({...modalFile, show: "jpg", data: file})
+        if (ekstensi == "pdf") {
+            setModalFile({...modalFile, show: "pdf", data: file});
+        } else if (allowExtension.includes(ekstensi)) {
+            setModalFile({...modalFile, show: ekstensi, data: file})
         }
     }
     
@@ -202,7 +206,7 @@ const DetailPersetujuanPengajuan = (props) => {
                                             <span>Jumlah : {data.JUMLAH}</span>
                                             <span className="text-secondary">Spesifikasi : {data.SPESIFIKASI}</span>
                                         </div>
-                                        <Button className="primary mt-3" onClick={() => showFile(data.UPLOAD_FILE)}>Lihat File</Button>
+                                        <Button className="primary mt-3" onClick={() => showFileUpload(data.UPLOAD_FILE)}>Lihat File</Button>
                                     </Card.Body>
                                 </Card>
                             )
@@ -229,6 +233,32 @@ const DetailPersetujuanPengajuan = (props) => {
                 onHide={() => setRincianAlat({...rincianAlat, show: false})}
                 data={rincianAlat.data}
             />
+
+            {/* modal show file jpg*/}
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                show={allowExtension.includes(modalFile.show) ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
+                centered
+            >
+                <Modal.Body>
+                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} className="w-100 h-100" />
+                </Modal.Body>
+            </Modal>
+
+            {/* modal show file pdf */}
+            <Modal
+                size='lg'
+                aria-labelledby="contained-modal-title-vcenter"
+                show={modalFile.show === "pdf" ? true : false} onHide={() => setModalFile({...modalFile, show: ""})}
+                centered
+            >
+                <Modal.Body style={{height: "500px"}}>
+                    <embed 
+                        src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${modalFile.data}`} 
+                        className="w-100 h-100"
+                        type="application/pdf" />
+                </Modal.Body>
+            </Modal>
         </div>
     )
 }

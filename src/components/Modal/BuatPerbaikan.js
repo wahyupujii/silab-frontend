@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
-import {Form, Modal, Button, Table} from "react-bootstrap"
+import {Form, Modal, Button, Table, Image} from "react-bootstrap"
 import axios from "axios";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 
 const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
     
@@ -45,6 +45,13 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
 
     const buatPerbaikan = (e) => {
         e.preventDefault();
+        if (inputs.alatID.length === 0) {
+            Swal.fire({
+                icon: "error",
+                title: "Anda belum memilih alat rusak sama sekali"
+            });
+            return;
+        }
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
         axios({
             method: 'post',
@@ -69,9 +76,10 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
     const selectAlat = (alat) => {
         let alatTerpilih = inputs.alatID;
         if (alatTerpilih.includes(alat.ID)) {
-            inputs.alatID.pop(alat.ID);
+            let filter = alatTerpilih.filter((item) => item !== alat.ID);
+            setInputs({...inputs, alatID: [...filter]});
         } else {
-            setInputs({...inputs, alatID: [...inputs.alatID, alat.ID]});
+            setInputs({...inputs, alatID: [...inputs.alatID, alat.ID]})
         }
     }
 
@@ -145,6 +153,7 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
                                     <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Gambar</th>
                                             <th>Nama Alat</th>
                                         </tr>
                                     </thead>
@@ -154,9 +163,19 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
                                                 return (
                                                     <tr key={alat.ID}>
                                                         <td className='align-middle'>{index+1}</td>
+                                                        <td className='align-middle'>
+                                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
+                                                        </td>
                                                         <td className='align-middle'>{alat.NAMA}</td>
                                                         <td className='align-middle text-center'>
-                                                            <Button onClick={() => selectAlat(alat)}>Pilih</Button>
+                                                            {/* <Button onClick={() => selectAlat(alat)}>Pilih</Button> */}
+                                                            {
+                                                                inputs.alatID.includes(alat.ID) ? (
+                                                                    <Button variant="success" onClick={() => selectAlat(alat)}>Dipilih</Button>
+                                                                ) : !inputs.alatID.includes(alat.ID) ? (
+                                                                    <Button variant="outline-primary" onClick={() => selectAlat(alat)}>Pilih</Button>
+                                                                ) : (<span></span>)
+                                                            }
                                                         </td>
                                                     </tr>
                                                 )

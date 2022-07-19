@@ -7,8 +7,6 @@ import Swal from 'sweetalert2';
 import { TambahAlatBaru, DetailAlatPengajuan, EditAlatBaru } from '../../../components';
 import { Link } from 'react-router-dom';
 
-import { Document, Page } from "react-pdf";
-
 const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
     const [show, setShow] = useState(false);
@@ -24,9 +22,6 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
     const allowExtension = ["jpg", "png"];
 
-    // pdf state
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
     useEffect(() => {
         axios({
             method: 'post',
@@ -44,10 +39,6 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
             setLoading(false);
         })
     },[dataCount, dataPengajuan])
-
-    const onDocumentLoadSuccess = ({numPages}) => {
-        setNumPages(numPages);
-    }
 
     const deleteAlat = (id) => {
         Swal.fire({
@@ -82,9 +73,6 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
 
     const showFileUpload = (file) => {
         let ekstensi = file.split(".")[1];
-        // if (ekstensi === "jpg") { 
-        //     setModalFile({...modalFile, show: "jpg", data: file})
-        // }
         if (ekstensi == "pdf") {
             setModalFile({...modalFile, show: "pdf", data: file});
         } else if (allowExtension.includes(ekstensi)) {

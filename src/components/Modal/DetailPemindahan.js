@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Modal, Form, Table, Button } from 'react-bootstrap';
+import { Modal, Form, Table, Button, Image } from 'react-bootstrap';
 import axios from "axios";
 
 const DetailPemindahan = ({show, onHide, data}) => {
@@ -53,6 +53,7 @@ const DetailPemindahan = ({show, onHide, data}) => {
                                     <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Gambar</th>
                                             <th>Nama Alat</th>
                                         </tr>
                                     </thead>
@@ -62,6 +63,9 @@ const DetailPemindahan = ({show, onHide, data}) => {
                                                 return (
                                                     <tr key={alat.ID}>
                                                         <td className='align-middle'>{index+1}</td>
+                                                        <td className='align-middle'>
+                                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
+                                                        </td>
                                                         <td className='align-middle'>{alat.NAMA}</td>
                                                     </tr>
                                                 )

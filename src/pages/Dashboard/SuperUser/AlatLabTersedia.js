@@ -61,8 +61,10 @@ const AlatLabTersedia = (props) => {
                                     <th>Gambar</th>
                                     <th>Nama Alat</th>
                                     <th>Jumlah</th>
-                                    <th>Status</th>
-                                    <th>Kondisi</th>
+                                    <th>Nomor Seri</th>
+                                    <th>Status Alat</th>
+                                    <th>Kondisi Alat</th>
+                                    <th>Status Pindah</th>
                                     <th>Detail Alat</th>
                                 </tr>
                             </thead>
@@ -79,11 +81,15 @@ const AlatLabTersedia = (props) => {
                                                 </td>
                                                 <td className='align-middle'>{data.NAMA}</td>
                                                 <td className='align-middle'>{data.JUMLAH}</td>
+                                                <td className='align-middle'>{data.NOMOR_SERI}</td>
                                                 <td className='align-middle'>
                                                     <Badge bg={status}>{data.STATUS_ALAT}</Badge>{' '}
                                                 </td>
                                                 <td className='align-middle'>
                                                     <Badge bg={kondisi}>{data.KONDISI_ALAT}</Badge>{' '}
+                                                </td>
+                                                <td className='align-middle'>
+                                                    <Badge bg="info">{data.STATUS_PINDAH}</Badge>{' '}
                                                 </td>
                                                 <td className='align-middle'>
                                                     <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>

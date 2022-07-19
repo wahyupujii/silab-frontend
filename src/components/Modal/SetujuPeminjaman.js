@@ -55,7 +55,7 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=tolakPeminjaman',
             data: { 
-                nama_peminjaman: data.NAMA_PEMINJAMAN
+                keperluan_pinjam: data.KEPERLUAN_PINJAM
              },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'

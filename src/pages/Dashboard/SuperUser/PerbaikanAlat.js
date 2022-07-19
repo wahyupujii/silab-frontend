@@ -63,7 +63,7 @@ const PerbaikanAlat = ({dataUser}) => {
                                     <tbody>
                                         {
                                             dataPerbaikan.map((data, index) => {
-                                                let status = data.STATUS === 'Ditolak KaLab' ? 'danger' : data.STATUS === 'Disetujui KaLab' ? 'success' : 'primary';
+                                                let status = data.STATUS === 'Ditolak KaLab' ? 'danger' : data.STATUS === 'Disetujui KaLab' || data.STATUS === 'Perbaikan Selesai' ? 'success' : 'primary';
                                                 return (
                                                     <tr key={data.ID}>
                                                         <td className='align-middle'>{index+1}</td>
@@ -102,6 +102,7 @@ const PerbaikanAlat = ({dataUser}) => {
                     show={detailPerbaikan.show}
                     onHide={() => setDetailPerbaikan({...detailPerbaikan, show: false})}
                     data={detailPerbaikan.data}
+                    count={() => setDataCount(dataCount+1)}
                 />
             </div>
         </>

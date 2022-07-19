@@ -100,7 +100,7 @@ const RiwayatPengajuan = ({dataUser}) => {
                     Swal.fire({
                         icon: 'error',
                         title: "Gagal menghapus pengajuan",
-                        text: "Mungkin pengajuan sedang dalam proses persetujuan"
+                        text: "Mungkin pengajuan sedang dalam proses persetujuan / sebaiknya tidak dihapus"
                     })
                 });
             }

@@ -52,6 +52,7 @@ const PersetujuanPemindahan = ({dataUser}) => {
                                         <th>No</th>
                                         <th>Nama Pemindahan</th>
                                         <th>Tanggal Pemindahan</th>
+                                        <th>Laboratorium Tujuan</th>
                                         <th>Status</th>
                                         <th>Detail</th>
                                     </tr>
@@ -65,6 +66,7 @@ const PersetujuanPemindahan = ({dataUser}) => {
                                                     <td className="align-middle">{++index}</td>
                                                     <td className="align-middle">{data.NAMA_PEMINDAHAN}</td>
                                                     <td className="align-middle">{data.TANGGAL_PEMINDAHAN}</td>
+                                                    <td className="align-middle">{data.LAB_TUJUAN}</td>
                                                     <td className='align-middle'>
                                                         <Badge bg={status}>{data.STATUS}</Badge>{' '}
                                                     </td>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Modal, Form, Table, Button} from 'react-bootstrap';
+import {Modal, Form, Table, Button, Image} from 'react-bootstrap';
 import axios from "axios";
 
 const SetujuPemindahan = ({show, onHide, data, count}) => {
@@ -99,6 +99,7 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
                                     <thead>
                                         <tr>
                                             <th>#</th>
+                                            <th>Gambar</th>
                                             <th>Nama Alat</th>
                                         </tr>
                                     </thead>
@@ -107,8 +108,11 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
                                             alatPemindahan.map((alat, index) => {
                                                 return (
                                                     <tr>
-                                                        <td>{index+1}</td>
-                                                        <td>{alat.NAMA}</td>
+                                                        <td className="align-middle">{index+1}</td>
+                                                        <td className="align-middle">
+                                                            <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
+                                                        </td>
+                                                        <td className="align-middle">{alat.NAMA}</td>
                                                     </tr>
                                                 )
                                             })
@@ -121,8 +125,16 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger" onClick={() => tolakPemindahan()}>Tolak Pemindahan</Button>
-                    <Button variant="success" onClick={() => setujuiPemindahan()}>Setuju Pemindahan</Button>
+                    {
+                        data.dataPemindahan.STATUS === 'Disetujui KaLab' || data.dataPemindahan.STATUS === 'Disetujui KaLab' ? (
+                            <div></div>
+                        ) : (
+                            <>
+                                <Button variant="danger" onClick={() => tolakPemindahan()}>Tolak Pemindahan</Button>
+                                <Button variant="success" onClick={() => setujuiPemindahan()}>Setuju Pemindahan</Button>
+                            </>
+                        )                    
+                    }
                     <Button variant="primary" onClick={() => onHide()}>Close</Button>
                 </Modal.Footer>
             </Modal>        

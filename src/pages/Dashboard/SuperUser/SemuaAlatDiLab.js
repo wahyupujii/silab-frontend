@@ -46,17 +46,6 @@ const SemuaAlatDiLab = (props) => {
             </Breadcrumb>
             <div className="d-flex justify-content-between">
                 <h2>Informasi Semua Alat Lab</h2>
-                {/* <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Pilih Alat Sesuai Status
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                        <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown> */}
             </div>
 
             <div className="mt-2">
@@ -69,8 +58,10 @@ const SemuaAlatDiLab = (props) => {
                                     <th>Gambar</th>
                                     <th>Nama Alat</th>
                                     <th>Jumlah</th>
+                                    <th>Nomor Seri</th>
                                     <th>Status</th>
                                     <th>Kondisi</th>
+                                    <th>Status Pindah</th>
                                     <th>Detail</th>
                                 </tr>
                             </thead>
@@ -87,11 +78,15 @@ const SemuaAlatDiLab = (props) => {
                                                 </td>
                                                 <td className='align-middle'>{data.NAMA}</td>
                                                 <td className='align-middle'>{data.JUMLAH}</td>
+                                                <td className='align-middle'>{data.NOMOR_SERI}</td>
                                                 <td className='align-middle'>
                                                     <Badge bg={status}>{data.STATUS_ALAT}</Badge>{' '}
                                                 </td>
                                                 <td className='align-middle'>
                                                     <Badge bg={kondisi}>{data.KONDISI_ALAT}</Badge>{' '}
+                                                </td>
+                                                <td className='align-middle'>
+                                                    <Badge bg='info'>{data.STATUS_PINDAH}</Badge>{' '}
                                                 </td>
                                                 <td className='align-middle'>
                                                     <Button variant="primary" onClick={() => setModal({show:true, detailAlat: data})}>Detail</Button>
