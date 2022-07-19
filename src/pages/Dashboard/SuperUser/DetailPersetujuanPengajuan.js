@@ -121,10 +121,10 @@ const DetailPersetujuanPengajuan = (props) => {
     }
 
     const pengadaanSelesai = () => {
+        let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
         Swal.fire({
             icon: 'question',
             title: 'Anda yakin ingin MENYELESAIKAN PROSES PENGAJUAN ini ? ',
-            text: 'Data alat baru yang diajukan akan langsung menjadi data alat laboratorium',
             showDenyButton: true,
             confirmButtonText: 'Ya saya yakin',
             denyButtonText: 'Tidak jadi'
@@ -132,15 +132,27 @@ const DetailPersetujuanPengajuan = (props) => {
             if (response.isConfirmed) {
                 axios({
                     method: 'post',
-                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPengajuan.php?function=selesaikanPengajuan',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPengajuan.php?function=pengadaanSelesai',
                     data: {
                         pegawai_nomor: props.data.dataUser.NOMOR,
                         pengajuan_id: props.data.detail.ID,
-                        // tanggal_persetujuan: today
+                        tanggal_persetujuan: today
                     },
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                     }
+                }).then(() => {
+                    Swal.fire({
+                        icon: "success",
+                        text: "Berhasil mengakhiri pengadaan"
+                    })
+                    props.handleBack();
+                    props.count();
+                }).catch(() => {
+                    Swal.fire({
+                        icon: "error",
+                        text: "Gagal mengakhiri pengadaan"
+                    })
                 })
             }
         })
@@ -160,7 +172,7 @@ const DetailPersetujuanPengajuan = (props) => {
                 {
                     props.data.detail.STATUS === "Dilakukan Pengadaan" ? (
                         <div className="d-flex justify-content-end">
-                            <Button variant="success mx-2">Konfirmasi Pengadaan Selesai</Button>
+                            <Button variant="success mx-2" onClick={() => pengadaanSelesai()}>Konfirmasi Pengadaan Selesai</Button>
                             <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: props.data.detail.NAMA_PENGAJUAN})}>Lihat Rincian Semua Alat</Button>
                         </div>
                 ) : <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: props.data.detail.NAMA_PENGAJUAN})}>Lihat Rincian Semua Alat</Button>

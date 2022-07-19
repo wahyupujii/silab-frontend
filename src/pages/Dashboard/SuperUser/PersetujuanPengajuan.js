@@ -20,7 +20,7 @@ const PersetujuanPengajuan = ({dataUser}) => {
         } else if (dataUser.NAMA_ROLE === 'Bagian Administrasi Umum dan Keuangan') {
             persetujuanAsdir();
         }
-    }, count)
+    }, [count])
 
     const persetujuanKadep = () => {
         axios({
@@ -138,6 +138,7 @@ const PersetujuanPengajuan = ({dataUser}) => {
                                             <th>No</th>
                                             <th>Yang Mengajukan</th>
                                             <th>Nama Pengajuan</th>
+                                            <th>Laboratorium</th>
                                             <th>Status</th>
                                             <th>Detail</th>
                                         </tr>
@@ -151,6 +152,7 @@ const PersetujuanPengajuan = ({dataUser}) => {
                                                         <td className="align-middle">{++index}</td>
                                                         <td className="align-middle">{item.NAMA_PEGAWAI}</td>
                                                         <td className="align-middle">{item.NAMA_PENGAJUAN}</td>
+                                                        <td className="align-middle">{item.NAMA_LAB}</td>
                                                         <td className='align-middle'>
                                                             <Badge bg={status}>{item.STATUS}</Badge>{' '}
                                                         </td>

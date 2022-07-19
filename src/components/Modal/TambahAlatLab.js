@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
-import {Modal, Form, Button} from "react-bootstrap";
+import {Modal, Form, Button, InputGroup} from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
 
 import { Editor } from '@tinymce/tinymce-react';
 
 const TambahAlatLab = ({show, onHide, data, count}) => {
-    const [inputs, setInputs] = useState({});
+    const [inputs, setInputs] = useState({
+        nomor_seri: ""
+    });
     const editorRef = useRef(null);
 
     const tambahAlatLab = (e) => {
@@ -61,6 +63,11 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
             })
             formDataAlat.delete('GAMBAR');
         })        
+    }
+
+    const setRandomSeri = () => {
+        let random = Math.floor((Math.random() * 9999999) + 1);
+        setInputs({...inputs, nomor_seri: random});
     }
 
     return (
@@ -125,14 +132,19 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>No Seri</Form.Label>
-                                <Form.Control
-                                    name="no_seri"
-                                    type="text"
-                                    placeholder='No Seri'
-                                    onChange={(e) => setInputs({...inputs, [e.target.name]: e.target.value})}
-                                />
+                                <Form.Label>Nomor Seri</Form.Label>
+                                <InputGroup>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Nomor Seri"
+                                        value={inputs.nomor_seri}
+                                    />
+                                    <button className='px-2' style={{ border: 'none' }} type="button" onClick={() => setRandomSeri()}>
+                                        Get Random No Seri
+                                    </button>
+                                </InputGroup>
                             </Form.Group>
+
                             <Form.Group className="mb-3">
                                 <Form.Label>Upload Gambar</Form.Label>
                                 <Form.Control 
@@ -144,7 +156,7 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                             </Form.Group>
                         </div>
                     </div>
-                    <Form.Group className="mb-3 w-100">
+                    <Form.Group className="mb-3 w-100 px-2">
                         <Form.Label>Spesifikasi</Form.Label><br/>
                         <Form.Text className="text-danger">
                             Penulisan spesifikasi menggunakan bullet list <br/>

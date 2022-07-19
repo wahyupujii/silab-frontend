@@ -133,7 +133,7 @@ const RiwayatPengajuan = ({dataUser}) => {
                                         <tbody>
                                             {
                                                 dataPengajuan.map((data, index) => {
-                                                    let status = data.STATUS === 'Pengajuan Ditolak' ? 'danger' : data.STATUS === 'Dilakukan Pengadaan' ? 'success' : 'primary';
+                                                    let status = data.STATUS === 'Pengajuan Ditolak' ? 'danger' : data.STATUS === 'Dilakukan Pengadaan' || data.STATUS === 'Pengadaan Selesai' || data.STATUS === 'Pengajuan Selesai' ? 'success' : 'primary';
                                                     return (
                                                         <tr>
                                                             <td className='align-middle'>{index+1}</td>

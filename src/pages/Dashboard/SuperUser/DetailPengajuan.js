@@ -109,6 +109,34 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
         })
     }
 
+    const tambahKeAlatLab = () => {
+        let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
+        let teknisi_nomor = JSON.parse(sessionStorage.getItem("superUser"));
+        axios({
+            method: 'post',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pengajuanAlat.php?function=ubahAlatBaruKeAlatLab',
+            data: {
+                pengajuanID: dataPengajuan.ID,
+                teknisi_nomor: teknisi_nomor.NOMOR,
+                tahun: new Date().getFullYear(),
+                today: today
+            },
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        }).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: "Berhasil mengubah menjadi alat lab",
+            })
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: "Gagal mengubah menjadi alat lab",
+            })
+        })
+    }
+
     return (
         <div className='w-100 p-3'>
             <div>
@@ -124,6 +152,8 @@ const DetailPengajuan = ({handleBack, dataPengajuan}) => {
                                     <Button variant="success" onClick={() => ajukanPengajuan()}>Ajukan Pengajuan</Button>
                                     <Button variant="primary" className="mx-2" onClick={() => setShow(true)}>Tambah Alat</Button>
                                 </>
+                            ) : dataPengajuan.STATUS === "Pengadaan Selesai" ? (
+                                <Button variant="info" className="mx-2" onClick={() => tambahKeAlatLab()}>Tambahkan Ke Alat Lab</Button>
                             ) : (<div></div>)
                         }
                         <Button variant="secondary" onClick={() => setRincianAlat({...rincianAlat, show: true, data: dataPengajuan.NAMA})}>Lihat Rincian Semua Alat</Button>
