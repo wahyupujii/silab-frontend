@@ -13,7 +13,7 @@ const AlatLab = (props) => {
     useEffect(() => {
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatKondisiBaik',
+            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatAkumulasi',
             data: {labID: props.data.labData.ID},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -45,8 +45,6 @@ const AlatLab = (props) => {
                                     <th>Gambar</th>
                                     <th>Nama Alat</th>
                                     <th>Jumlah</th>
-                                    <th>Status</th>
-                                    <th>Kondisi</th>
                                     <th>Detail</th>
                                 </tr>
                             </thead>
@@ -64,12 +62,6 @@ const AlatLab = (props) => {
                                                 </td>
                                                 <td className='align-middle'>{data.NAMA}</td>
                                                 <td className='align-middle'>{data.JUMLAH}</td>
-                                                <td className='align-middle'>
-                                                    <Badge bg={status}>{data.STATUS_ALAT}</Badge>{' '}
-                                                </td>
-                                                <td className='align-middle'>
-                                                    <Badge bg={kondisi}>{data.KONDISI_ALAT}</Badge>{' '}
-                                                </td>
                                                 <td className='align-middle'>
                                                     <Button variant="primary" onClick={() => setShow({show:true, detailAlat: data})}>Detail</Button>
                                                 </td>

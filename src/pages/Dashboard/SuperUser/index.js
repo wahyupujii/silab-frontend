@@ -52,7 +52,6 @@ const SuperUser = ({dataUser}) => {
                             <>
                                 <List icon={InformasiAlatIcon} title="Alat Lab Tersedia" path="/mis105/SILAB/dashboard" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard")} />
                                 <List icon={PengajuanAlatIcon} title="Semua Alat Lab" path="/mis105/SILAB/dashboard/semua-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/semua-alat")} />
-                                <List icon={PengajuanAlatIcon} title="Laboratorium" path="/mis105/SILAB/dashboard/laboratorium" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/laboratorium")} />
                                 <List icon={PengajuanAlatIcon} title="Pengajuan Alat" path="/mis105/SILAB/dashboard/pengajuan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/pengajuan-alat")} />
                                 <List icon={PeminjamanAlatIcon} title="Peminjaman Alat" path="/mis105/SILAB/dashboard/peminjaman-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/peminjaman-alat")} />
                                 <List icon={PeminjamanAlatIcon} title="Pengajuan Perbaikan Alat" path="/mis105/SILAB/dashboard/perbaikan-alat" isActive={linkActive} onClick={() => setLinkActive("/mis105/SILAB/dashboard/perbaikan-alat")} />

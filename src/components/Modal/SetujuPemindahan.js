@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Modal, Form, Table, Button, Image} from 'react-bootstrap';
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const SetujuPemindahan = ({show, onHide, data, count}) => {
     const [alatPemindahan, setAlatPemindahan] = useState([]);
@@ -29,25 +30,36 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
 
     const setujuiPemindahan = () => {
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=setujuiPemindahan',
-            data: { 
-                kalab_nomor: data.dataUser.NOMOR,
-                pemindahan_id: data.dataPemindahan.ID,
-                nama_pemindahan: data.dataPemindahan.NAMA_PEMINDAHAN,
-                tanggal_persetujuan: today,
-                lab_tujuan: data.dataPemindahan.LAB_TUJUAN
-            },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        Swal.fire({
+            icon: 'question',
+            title: 'Setujui Pemindahan',
+            text: 'Apa anda yakin ingin MENYETUJUI PEMINDAHAN ini ?',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=setujuiPemindahan',
+                    data: { 
+                        kalab_nomor: data.dataUser.NOMOR,
+                        pemindahan_id: data.dataPemindahan.ID,
+                        tanggal_persetujuan: today,
+                        lab_tujuan: data.dataPemindahan.LAB_TUJUAN
+                    },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    onHide();
+                    count();
+                }).catch(() => {
+                    
+                })
             }
-        }).then(() => {
-            onHide();
-            count();
-        }).catch(() => {
-            
-        })
+        })    
+    
     }
 
     const tolakPemindahan = () => {
@@ -100,6 +112,7 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
                                         <tr>
                                             <th>#</th>
                                             <th>Gambar</th>
+                                            <th>Nomor Seri</th>
                                             <th>Nama Alat</th>
                                         </tr>
                                     </thead>
@@ -107,11 +120,12 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
                                         {
                                             alatPemindahan.map((alat, index) => {
                                                 return (
-                                                    <tr>
+                                                    <tr key={alat.ID}>
                                                         <td className="align-middle">{index+1}</td>
                                                         <td className="align-middle">
                                                             <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
                                                         </td>
+                                                        <td className="align-middle">{alat.NOMOR_SERI}</td>
                                                         <td className="align-middle">{alat.NAMA}</td>
                                                     </tr>
                                                 )

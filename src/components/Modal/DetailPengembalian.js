@@ -124,8 +124,8 @@ const DetailPengembalian = ({show, onHide, count, data}) => {
             <Modal.Footer>
                 {
                     data.STATUS_PINJAM === "Disetujui KaLab" && data.STATUS_KEMBALI === "Menunggu ACC KaLab"? (
-                        <Button variant="info" onClick={() => setujuPengembalian()}>
-                            Kembalikan Alat
+                        <Button variant="success" onClick={() => setujuPengembalian()}>
+                            Setuju Pengembalian
                         </Button>
                     ) : (<div></div>)
                 }

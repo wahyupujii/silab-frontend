@@ -54,6 +54,7 @@ const DetailPemindahan = ({show, onHide, data}) => {
                                         <tr>
                                             <th>#</th>
                                             <th>Gambar</th>
+                                            <th>Nomor Seri</th>
                                             <th>Nama Alat</th>
                                         </tr>
                                     </thead>
@@ -66,6 +67,7 @@ const DetailPemindahan = ({show, onHide, data}) => {
                                                         <td className='align-middle'>
                                                             <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
                                                         </td>
+                                                        <td className='align-middle'>{alat.NOMOR_SERI}</td>
                                                         <td className='align-middle'>{alat.NAMA}</td>
                                                     </tr>
                                                 )

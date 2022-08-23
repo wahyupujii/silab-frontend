@@ -27,7 +27,8 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
                     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
                 }
             }).then(result => {
-                setAlatLab(result.data.data);
+                setAlatLab(result.data.data.dataAlat);
+                setInputs({...inputs, lab_asal: result.data.data.labNama})
                 setLoading(false)
             }).catch((err) => {
                 setAlatLab(null);
@@ -55,6 +56,7 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
             });
             return;
         }
+        // console.log(inputs);
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/pemindahanAlat.php?function=buatPemindahan',
@@ -68,7 +70,7 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
         }).then(result => {
             count();
             onHide();
-        }).catch()
+        }).catch((err) => console.log(err))
     }
 
     return (
@@ -77,6 +79,8 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
                 size="lg"
                 show={show}
                 onHide={() => onHide()}
+                backdrop="static"
+                keyboard={false}
             >
                 <Form onSubmit={buatPemindahan}>
                     <Modal.Header closeButton>
@@ -128,7 +132,7 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
                                     {
                                         labByJurusan.map(lab => {
                                             return (
-                                                <option value={lab.ID} key={lab.ID}>{lab.NAMA}</option>
+                                                <option value={lab.NAMA} key={lab.ID}>{lab.NAMA}</option>
                                             )
                                         })
                                     }
@@ -144,6 +148,7 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
                                                 <th>#</th>
                                                 <th>Gambar</th>
                                                 <th>Nama Alat</th>
+                                                <th>Nomor Seri</th>
                                                 <th>Pilih Alat</th>
                                             </tr>
                                         </thead>
@@ -160,6 +165,7 @@ const BuatPemindahan = ({show, onHide, data, count}) => {
                                                                 <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
                                                             </td>
                                                             <td className='align-middle'>{alat.NAMA}</td>
+                                                            <td className='align-middle'>{alat.NOMOR_SERI}</td>
                                                             <td className='align-middle'>
                                                                 {/* <Button variant="success" onClick={() => pilihAlat(alat)}>Dipilih</Button> */}
                                                                 {

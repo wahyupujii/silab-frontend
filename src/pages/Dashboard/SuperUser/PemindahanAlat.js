@@ -74,7 +74,7 @@ const PemindahanAlat = ({dataUser}) => {
                                         <th>Nama Pemindahan</th>
                                         <th>Tanggal Pemindahan</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
+                                        {/* <th>Aksi</th> */}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -82,7 +82,7 @@ const PemindahanAlat = ({dataUser}) => {
                                         dataPemindahan.map((data, index) => {
                                             let status = data.STATUS === 'Ditolak KaLab' ? 'danger' : data.STATUS === 'Disetujui KaLab' ? 'success' : 'primary';
                                             return (
-                                                <tr>
+                                                <tr key={data.ID}>
                                                     <td className='align-middle'>{index+1}</td>
                                                     <td className='align-middle'>{data.NAMA_PEMINDAHAN}</td>
                                                     <td className='align-middle'>{data.TANGGAL_PEMINDAHAN}</td>
@@ -94,11 +94,11 @@ const PemindahanAlat = ({dataUser}) => {
                                                             variant="primary"
                                                             onClick={() => setDetailPemindahan({show: true, data: data})}
                                                         >Detail</Button>
-                                                        <Button 
+                                                        {/* <Button 
                                                             variant="danger"
                                                             className="mx-2"
                                                             onClick={() => deletePemindahan(data.ID)}
-                                                        >Hapus</Button>
+                                                        >Hapus</Button> */}
                                                     </td>
                                                 </tr>
                                             )

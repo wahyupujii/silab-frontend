@@ -22,6 +22,7 @@ const PersetujuanPerbaikan = ({dataUser}) => {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         }).then((data) => {
+            console.log(data);
             setDataPerbaikan(data.data.data);
             setDataCount(data.data.data.length);
             setLoading(false);

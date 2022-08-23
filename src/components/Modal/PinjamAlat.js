@@ -38,11 +38,11 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
     // memilih alat yang dipinjam
     const pinjamAlat = (alat) => {
         let alatTerpilih = inputs.alat_lab;
-        if (alatTerpilih.includes(alat.ID)) {
-            let filter = alatTerpilih.filter((item) => item !== alat.ID);
+        if (alatTerpilih.includes(alat.NAMA)) {
+            let filter = alatTerpilih.filter((item) => item !== alat.NAMA);
             setInputs({...inputs, alat_lab: [...filter]});
         } else {
-            setInputs({...inputs, alat_lab: [...inputs.alat_lab, alat.ID]})
+            setInputs({...inputs, alat_lab: [...inputs.alat_lab, alat.NAMA]})
         }
     }
 
@@ -64,6 +64,7 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
         }).catch(() => {
             // swal gagal meminjam alat
         })
+        // console.log(inputs)
     }
 
     return (
@@ -126,6 +127,7 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                                             <th>#</th>
                                             <th>Gambar</th>
                                             <th>Nama Alat</th>
+                                            <th>Jumlah Tersedia</th>
                                             <th>Pilih Alat</th>
                                         </tr>
                                     </thead>
@@ -142,11 +144,12 @@ const PinjamAlat = ({show, onHide, count, dataUser}) => {
                                                             <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
                                                         </td>
                                                         <td className='align-middle'>{alat.NAMA}</td>
+                                                        <td className='align-middle'>{alat.JUMLAH}</td>
                                                         <td className='align-middle'>
                                                             {
-                                                                inputs.alat_lab.includes(alat.ID) ? (
+                                                                inputs.alat_lab.includes(alat.NAMA) ? (
                                                                     <Button variant="success" onClick={() => pinjamAlat(alat)}>Dipilih</Button>
-                                                                ) : !inputs.alat_lab.includes(alat.ID) ? (
+                                                                ) : !inputs.alat_lab.includes(alat.NAMA) ? (
                                                                     <Button variant="outline-primary" onClick={() => pinjamAlat(alat)}>Pinjam</Button>
                                                                 ) : (<span></span>)
                                                             }

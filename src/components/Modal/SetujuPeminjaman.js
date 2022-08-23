@@ -30,44 +30,66 @@ const SetujuPeminjaman = ({show, onHide, data, count}) => {
     }, [show])
 
     const setujuiPeminjaman = () => {
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=setujuiPeminjaman',
-            data: { 
-                keperluan_pinjam: data.KEPERLUAN_PINJAM
-             },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        Swal.fire({
+            icon: 'question',
+            title: 'Setujui Peminjaman',
+            text: 'Apa anda yakin ingin menyetujui peminjaman ini ?',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=setujuiPeminjaman',
+                    data: { 
+                        keperluan_pinjam: data.KEPERLUAN_PINJAM
+                     },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    count();
+                    onHide();
+                }).catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menyetujui Peminjaman'
+                    })
+                })
             }
-        }).then(() => {
-            count();
-            onHide();
-        }).catch(() => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Menyetujui Peminjaman'
-            })
         })
     }
 
     const tolakPeminjaman = () => {
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=tolakPeminjaman',
-            data: { 
-                keperluan_pinjam: data.KEPERLUAN_PINJAM
-             },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        Swal.fire({
+            icon: 'question',
+            title: 'Tolak Peminjaman',
+            text: 'Apa anda yakin ingin menolak peminjaman ini ?',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPeminjaman.php?function=tolakPeminjaman',
+                    data: { 
+                        keperluan_pinjam: data.KEPERLUAN_PINJAM
+                     },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    count();
+                    onHide();
+                }).catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Menolak Peminjaman'
+                    })
+                })
             }
-        }).then(() => {
-            count();
-            onHide();
-        }).catch(() => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Menolak Peminjaman'
-            })
         })
     }
 

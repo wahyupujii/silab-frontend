@@ -6,9 +6,7 @@ import Swal from "sweetalert2";
 import { Editor } from '@tinymce/tinymce-react';
 
 const TambahAlatLab = ({show, onHide, data, count}) => {
-    const [inputs, setInputs] = useState({
-        nomor_seri: ""
-    });
+    const [inputs, setInputs] = useState({});
     const editorRef = useRef(null);
 
     const tambahAlatLab = (e) => {
@@ -34,15 +32,15 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
         formDataAlat.append('JUMLAH', parseInt(inputs.jumlah));
         formDataAlat.append('TAHUN', inputs.tahun);
 
-        if (inputs.hasOwnProperty("no_seri")) {
-            formDataAlat.append('NOMOR_SERI', inputs.no_seri);
-        } else {
-            formDataAlat.append('NOMOR_SERI', "");
-        }
+        // // if (inputs.hasOwnProperty("no_seri")) {
+        // //     formDataAlat.append('NOMOR_SERI', inputs.nomor_seri);
+        // // } else {
+        // //     formDataAlat.append('NOMOR_SERI', "");
+        // // }
 
         formDataAlat.append('GAMBAR', inputs.gambar);
         formDataAlat.append('TEKNISI_NOMOR', parseInt(data.dataUser.NOMOR));
-        formDataAlat.append('DATE_KELOLA', today)
+        formDataAlat.append('TGL_ALAT_MASUK', today)
         formDataAlat.append('LAB_ID', parseInt(data.dataLab));
 
         axios({
@@ -64,14 +62,9 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
             formDataAlat.delete('GAMBAR');
         })        
     }
-
-    const setRandomSeri = () => {
-        let random = Math.floor((Math.random() * 9999999) + 1);
-        setInputs({...inputs, nomor_seri: random});
-    }
-
+    
     return (
-        <Modal show={show} onHide={() => onHide(false)} size="lg">
+        <Modal show={show} onHide={() => onHide(false)} size="lg" backdrop="static" keyboard={false}>
             <Form onSubmit={tambahAlatLab} encType="multipart/form-data" >
                 <Modal.Header closeButton>
                     <Modal.Title>Tambah Alat Lab Baru</Modal.Title>
@@ -131,19 +124,20 @@ const TambahAlatLab = ({show, onHide, data, count}) => {
                                     required={true}
                                 />
                             </Form.Group>
-                            <Form.Group className="mb-3">
+                            {/* <Form.Group className="mb-3">
                                 <Form.Label>Nomor Seri</Form.Label>
                                 <InputGroup>
                                     <Form.Control
                                         type="text"
                                         placeholder="Nomor Seri"
                                         value={inputs.nomor_seri}
+                                        readOnly
                                     />
                                     <button className='px-2' style={{ border: 'none' }} type="button" onClick={() => setRandomSeri()}>
                                         Get Random No Seri
                                     </button>
                                 </InputGroup>
-                            </Form.Group>
+                            </Form.Group> */}
 
                             <Form.Group className="mb-3">
                                 <Form.Label>Upload Gambar</Form.Label>

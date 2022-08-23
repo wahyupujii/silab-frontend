@@ -53,7 +53,7 @@ const DetailAlatLab = ({ type, show, onHide, data, count }) => {
         <>
             {
                 modalEditAlat === false ? (
-                    <Modal show={show} onHide={() => onHide()} size="lg">
+                    <Modal show={show} onHide={() => onHide()} size="lg" backdrop="static" keyboard="false">
                         <Modal.Header closeButton>
                             <Modal.Title>Detail Alat</Modal.Title>
                         </Modal.Header>
@@ -85,40 +85,52 @@ const DetailAlatLab = ({ type, show, onHide, data, count }) => {
                                                 readOnly
                                             />
                                         </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Jumlah</Form.Label>
-                                            <Form.Control
-                                                type="jumlah"
-                                                value={data.dataAlat.JUMLAH}
-                                                readOnly
-                                            />
-                                        </Form.Group>
+                                        {
+                                            data.dataAlat.hasOwnProperty("JUMLAH") ? (
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>Jumlah</Form.Label>
+                                                    <Form.Control
+                                                        type="jumlah"
+                                                        value={data.dataAlat.JUMLAH}
+                                                        readOnly
+                                                    />
+                                                </Form.Group>
+                                            ) : (<div></div>)
+                                        }
                                     </div>
                                     <div className="w-50 px-2">
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Status Alat</Form.Label>
-                                            <Form.Control
-                                                type="status_alat"
-                                                value={data.dataAlat.STATUS_ALAT}
-                                                readOnly
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Kondisi Alat</Form.Label>
-                                            <Form.Control
-                                                type="kondisi_alat"
-                                                value={data.dataAlat.KONDISI_ALAT}
-                                                readOnly
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Status Pindah</Form.Label>
-                                            <Form.Control
-                                                type="status_pindah"
-                                                value={data.dataAlat.STATUS_PINDAH}
-                                                readOnly
-                                            />
-                                        </Form.Group>
+                                        {
+                                            data.dataAlat.hasOwnProperty("JUMLAH") ? (
+                                                <div></div>       
+                                            ) : (
+                                                <div>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label>Status Alat</Form.Label>
+                                                        <Form.Control
+                                                            type="status_alat"
+                                                            value={data.dataAlat.STATUS_ALAT}
+                                                            readOnly
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label>Kondisi Alat</Form.Label>
+                                                        <Form.Control
+                                                            type="kondisi_alat"
+                                                            value={data.dataAlat.KONDISI_ALAT}
+                                                            readOnly
+                                                        />
+                                                    </Form.Group>
+                                                    <Form.Group className="mb-3">
+                                                        <Form.Label>Status Pindah</Form.Label>
+                                                        <Form.Control
+                                                            type="status_pindah"
+                                                            value={data.dataAlat.STATUS_PINDAH}
+                                                            readOnly
+                                                        />
+                                                    </Form.Group>
+                                                </div>
+                                            )
+                                        }
                                         <Form.Group className="mb-3">
                                             <Form.Label>Tahun</Form.Label>
                                             <Form.Control
@@ -127,20 +139,26 @@ const DetailAlatLab = ({ type, show, onHide, data, count }) => {
                                                 readOnly
                                             />
                                         </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>No Seri</Form.Label>
-                                            <Form.Control
-                                                type="seri"
-                                                value={data.dataAlat.NOMOR_SERI === null ? "-" : data.dataAlat.NOMOR_SERI}
-                                                readOnly
-                                            />
-                                        </Form.Group>
+                                        {
+                                            data.dataAlat.hasOwnProperty("JUMLAH") ? (
+                                                <div></div>
+                                            ) : (
+                                                <Form.Group className="mb-3">
+                                                    <Form.Label>No Seri</Form.Label>
+                                                    <Form.Control
+                                                        type="seri"
+                                                        value={data.dataAlat.NOMOR_SERI === null ? "-" : data.dataAlat.NOMOR_SERI}
+                                                        readOnly
+                                                    />
+                                                </Form.Group>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <Form.Group className="mb-3 px-2">
                                     <Form.Label>Spesifikasi Alat</Form.Label>
                                     <br/>
-                                    {returnSpesifikasi(data.dataAlat.SPEC)}
+                                    {returnSpesifikasi(data.dataAlat.SPESIFIKASI)}
                                 </Form.Group>
                             </Form>
                         </Modal.Body>

@@ -96,6 +96,10 @@ const SetujuPerbaikan = ({show, onHide, data, count}) => {
                             readOnly
                         ></Form.Control>
                     </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Catatan Kerusakan</Form.Label>
+                        <Form.Control as="textarea" rows={3} value={data.dataPerbaikan.CATATAN_KERUSAKAN} readOnly></Form.Control>
+                    </Form.Group>
                     <Form.Group className='mb-3'>
                         <Form.Label>Daftar Alat</Form.Label>
                         {

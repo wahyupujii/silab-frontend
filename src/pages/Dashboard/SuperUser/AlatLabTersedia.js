@@ -12,9 +12,15 @@ const AlatLabTersedia = (props) => {
     const [dataCount, setDataCount] = useState(0);
 
     useEffect(() => {
+        let url = ""
+        props.dataUser.NAMA_ROLE === "Teknisi Laboratorium" ? (
+            url = "https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getTiapAlat"
+        ) : (
+            url = "https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatAkumulasi"
+        )
         axios({
             method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/alatLab.php?function=getAlatKondisiBaik',
+            url: url,
             data: {labID: props.data.labID},
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -54,52 +60,91 @@ const AlatLabTersedia = (props) => {
             <div className="mt-2">
                 {
                     loading ? (<div>Loading ...</div>) : dataAlat === null ? (<span>Belum Ada Alat Di Lab Ini</span>) : (
-                        <Table striped>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Gambar</th>
-                                    <th>Nama Alat</th>
-                                    <th>Jumlah</th>
-                                    <th>Nomor Seri</th>
-                                    <th>Status Alat</th>
-                                    <th>Kondisi Alat</th>
-                                    <th>Status Pindah</th>
-                                    <th>Detail Alat</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    dataAlat.map((data, index) => {
-                                        let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'warning' : data.STATUS_ALAT === 'Dipinjam' ? 'primary' : 'info';
-                                        let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
-                                        return (
-                                            <tr key={data.ID}>
-                                                <td className='align-middle'>{index+1}</td>
-                                                <td className='align-middle'>
-                                                    <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
-                                                </td>
-                                                <td className='align-middle'>{data.NAMA}</td>
-                                                <td className='align-middle'>{data.JUMLAH}</td>
-                                                <td className='align-middle'>{data.NOMOR_SERI}</td>
-                                                <td className='align-middle'>
-                                                    <Badge bg={status}>{data.STATUS_ALAT}</Badge>{' '}
-                                                </td>
-                                                <td className='align-middle'>
-                                                    <Badge bg={kondisi}>{data.KONDISI_ALAT}</Badge>{' '}
-                                                </td>
-                                                <td className='align-middle'>
-                                                    <Badge bg="info">{data.STATUS_PINDAH}</Badge>{' '}
-                                                </td>
-                                                <td className='align-middle'>
-                                                    <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </Table>
+                        props.dataUser.NAMA_ROLE === "Teknisi Laboratorium" ? (
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Gambar</th>
+                                        <th>Nama Alat</th>
+                                        <th>Nomor Seri</th>
+                                        <th>Status Alat</th>
+                                        <th>Kondisi Alat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        dataAlat.map((data, index) => {
+                                            let status = data.STATUS_ALAT === 'ADA' ? 'success' : data.STATUS_ALAT === 'Menunggu ACC Pinjam' || data.STATUS_ALAT === 'Menunggu ACC Perbaikan' ? 'warning' : data.STATUS_ALAT === 'Dipinjam' ? 'primary' : 'info';
+                                            let kondisi = data.KONDISI_ALAT === 'BAIK' ? 'success' : data.KONDISI_ALAT === 'RUSAK' ? 'danger' : 'primary';
+                                            return (
+                                                <tr key={data.ID}>
+                                                    <td className='align-middle'>{index+1}</td>
+                                                    <td className='align-middle'>
+                                                        <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
+                                                    </td>
+                                                    <td className='align-middle'>{data.NAMA}</td>
+                                                    <td className='align-middle'>{data.NOMOR_SERI}</td>
+                                                    <td className='align-middle'>
+                                                        <h5>
+                                                            <Badge bg={status}>
+                                                                {data.STATUS_ALAT}
+                                                            </Badge>
+                                                        </h5>                                                    
+                                                    </td>
+                                                    <td className='align-middle'>
+                                                        <h5>
+                                                            <Badge bg={kondisi}>
+                                                                {data.KONDISI_ALAT}
+                                                            </Badge>
+                                                        </h5>
+                                                    </td>
+                                                    <td className='align-middle'>
+                                                        <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
+                        ) : (
+                            <Table striped>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Gambar</th>
+                                        <th>Nama Alat</th>
+                                        <th>Merk Alat</th>
+                                        <th>Type Alat</th>
+                                        <th>Jumlah Total</th>
+                                        <th>Detail Alat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        dataAlat.map((data, index) => {
+                                            return (
+                                                <tr key={data.ID}>
+                                                    <td className='align-middle'>{index+1}</td>
+                                                    <td className='align-middle'>
+                                                        <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${data.GAMBAR}`} thumbnail={true} width={150} />
+                                                    </td>
+                                                    <td className='align-middle'>{data.NAMA}</td>
+                                                    <td className='align-middle'>{data.MERK}</td>
+                                                    <td className='align-middle'>{data.TYPE}</td>
+                                                    <td className='align-middle'>{data.JUMLAH}</td>
+                                                    
+                                                    <td className='align-middle'>
+                                                        <Button variant="primary" onClick={() => setModalDetail({show:true, detailAlat: data})}>Detail</Button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                </tbody>
+                            </Table>
+                        )
                     )
                 }
             </div>

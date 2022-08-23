@@ -68,8 +68,12 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
         }).then(() => {
             count();
             onHide();
-        }).catch(() => {
-            
+        }).catch((err) => {
+            Swal.fire({
+                icon: "error",
+                title: "Gagal membuat PENGAJUAN PERBAIKAN",
+                text: err.response.data.message
+            })
         })
     }
 
@@ -155,6 +159,7 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
                                             <th>#</th>
                                             <th>Gambar</th>
                                             <th>Nama Alat</th>
+                                            <th>Nomor Seri</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -167,6 +172,7 @@ const BuatPerbaikan = ({show, onHide, dataUser, count}) => {
                                                             <Image src={`https://project.mis.pens.ac.id/mis105/SILAB/admin/${alat.GAMBAR}`} fluid={true} thumbnail={true} width={100} height={100} />
                                                         </td>
                                                         <td className='align-middle'>{alat.NAMA}</td>
+                                                        <td className='align-middle'>{alat.NOMOR_SERI}</td>
                                                         <td className='align-middle text-center'>
                                                             {/* <Button onClick={() => selectAlat(alat)}>Pilih</Button> */}
                                                             {

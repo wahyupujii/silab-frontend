@@ -13,15 +13,12 @@ const PersetujuanPemindahan = ({dataUser}) => {
     // modal setuju pemindahan
     const [modal, setModal] = useState({show: false, dataPemindahan: ""})
 
-    const dataLab = JSON.parse(localStorage.getItem("labByKalab"));
-
     useEffect(() => {
         axios({
             method: 'post',
             url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=getPemindahanByLab',
             data: {
                 kalab_nomor: dataUser.NOMOR,
-                laboratorium_id: dataLab[0].ID,
             },
             headers: {
                 'content-type': 'application/x-www-form-urlencoded;charset=utf-8'

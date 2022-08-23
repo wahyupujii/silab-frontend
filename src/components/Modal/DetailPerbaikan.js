@@ -86,7 +86,7 @@ const DetailPerbaikan = ({show, onHide, count, data}) => {
                     {dataAlat !== null ? (<Form.Label>Daftar Alat</Form.Label>) : (<div></div>)}
                     {
                         loading ? (<span>Loading ... </span>) : dataAlat === null ? 
-                        (<div className="text-danger">Alat yang rusak sebelumnya sudah tidak ada kaitan dengan perbaikan ini, karena perbaikan ini telah selesai</div>) : 
+                        (<div className="text-danger">Alat yang rusak sebelumnya sudah tidak ada kaitan dengan perbaikan ini, karena perbaikan ini telah ditoklak KaLab / selesai</div>) : 
                         (
                             <Table striped bordered hover>
                                 <thead>
