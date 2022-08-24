@@ -64,24 +64,34 @@ const SetujuPemindahan = ({show, onHide, data, count}) => {
 
     const tolakPemindahan = () => {
         let today = new Date().getFullYear() + "-" + String(new Date().getMonth()+1).padStart(2, "0") + "-" + new Date().getDate();
-        axios({
-            method: 'post',
-            url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=tolakPemindahan',
-            data: { 
-                kalab_nomor: data.dataUser.NOMOR,
-                pemindahan_id: data.dataPemindahan.ID,
-                nama_pemindahan: data.dataPemindahan.NAMA_PEMINDAHAN,
-                tanggal_persetujuan: today,
-            },
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        Swal.fire({
+            icon: 'question',
+            title: 'Setujui Pemindahan',
+            text: 'Apa anda yakin ingin MENYETUJUI PEMINDAHAN ini ?',
+            showDenyButton: true,
+            confirmButtonText: 'Ya saya yakin',
+            denyButtonText: 'Tidak jadi'
+        }).then(response => {
+            if (response.isConfirmed) {
+                axios({
+                    method: 'post',
+                    url: 'https://project.mis.pens.ac.id/mis105/SILAB/admin/api/persetujuanPemindahan.php?function=tolakPemindahan',
+                    data: { 
+                        kalab_nomor: data.dataUser.NOMOR,
+                        pemindahan_id: data.dataPemindahan.ID,
+                        nama_pemindahan: data.dataPemindahan.NAMA_PEMINDAHAN,
+                        tanggal_persetujuan: today,
+                    },
+                    headers: {
+                        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                    }
+                }).then(() => {
+                    onHide();
+                    count();
+                }).catch((err) => console.log(err))
             }
-        }).then(() => {
-            onHide();
-            count();
-        }).catch(() => {
-            
         })
+        
     }
 
     return (
